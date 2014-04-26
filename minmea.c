@@ -153,6 +153,8 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                             value = (10 * value) + (*field - '0');
                             if (scale)
                                 scale *= 10;
+                            if (scale == 100000)
+                                break;
                         } else if (*field == '.' && scale == 0) {
                             scale = 1;
                         } else {
