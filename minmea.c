@@ -457,7 +457,7 @@ bool minmea_parse_gsv(struct minmea_sentence_gsv *frame, const char *sentence)
     // $GPGSV,3,1,11,03,03,111,00,04,15,270,00,06,01,010,00,13,06,292,00*74
     char type[6];
 
-    if (!minmea_scan(sentence, "tiiiiiiiiiiiiiiiiiii",
+    if (!minmea_scan(sentence, "tiiiiiii;iiiiiiiiiiii",
             type,
             &frame->total_msgs,
             &frame->msg_nr,
