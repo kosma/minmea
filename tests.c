@@ -658,7 +658,7 @@ START_TEST(test_minmea_coord)
 }
 END_TEST
 
-Suite *minmea_suite(void)
+static Suite *minmea_suite(void)
 {
     Suite *s = suite_create ("minmea");
 
