@@ -579,7 +579,7 @@ START_TEST(test_minmea_parse_gll1)
         .longitude = { -121583416, 10000 },
         .time = { 16, 12, 29, 487000 },
         .status = MINMEA_GLL_STATUS_DATA_VALID,
-        .mode = MINMEA_GLL_MODE_AUTONOMOUS,
+        .mode = MINMEA_FAA_MODE_AUTONOMOUS,
     };
 
     ck_assert(minmea_check(sentence, false) == true);
