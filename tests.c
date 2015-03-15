@@ -569,8 +569,12 @@ END_TEST
 START_TEST(test_minmea_parse_gll1)
 {
     const char *sentence = "$GPGLL,3723.2475,N,12158.3416,W,161229.487,A,A*41";
+    // clear structs before initialization to enable use of memcmp()
+    // todo: add for other structs
     struct minmea_sentence_gll frame = {};
-    struct minmea_sentence_gll expected = {
+    struct minmea_sentence_gll expected = {};
+
+    expected = (struct minmea_sentence_gll){
         .latitude = { 37232475, 10000 },
         .longitude = { -121583416, 10000 },
         .time = { 16, 12, 29, 487000 },
