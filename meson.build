@@ -21,29 +21,29 @@ if get_option('buildtype') == 'debug'
     c_args += '-ggdb'
 endif
 
-minmea_includes = ['minmea.h']
+minmea_includes = include_directories('.')
 
-minmea_sources = ['minmea.c']
+minmea_sources = ['minmea/minmea.c']
 
 minmea_dependencies = []
 
 minmea_lib = library(
     'minmea',
     minmea_sources,
-    # include_directories: minmea_includes,
+    include_directories: minmea_includes,
     dependencies: minmea_dependencies,
     c_args: c_args,
 )
 
 minmea_dep = declare_dependency(
-    # include_directories: minmea_includes,
+    include_directories: minmea_includes,
     dependencies: minmea_dependencies,
     link_with: minmea_lib,
 )
 
 if get_option('example')
     minmea_example_sources = [
-        'example.c',
+        'minmea/example.c',
     ]
 
     minmea_example_dependencies = [
@@ -61,7 +61,7 @@ if get_option('tests')
     check = dependency('check')
 
     minmea_test_sources = [
-        'tests.c',
+        'minmea/tests.c',
     ]
 
     minmea_test_dependencies = [

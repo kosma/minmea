@@ -9,23 +9,27 @@ CFLAGS += -D_POSIX_C_SOURCE=199309L -D_BSD_SOURCE -D_DEFAULT_SOURCE -D_DARWIN_C_
 CFLAGS += $(shell pkg-config --cflags check)
 LDLIBS += $(shell pkg-config --libs check)
 
+SRC_DIR = minmea
+
 all: scan-build test example
 	@echo "+++ All good."""
 
-test: tests
+test: $(SRC_DIR)/tests
 	@echo "+++ Running Check test suite..."
-	./tests
+	./$(SRC_DIR)/tests
+
+example: $(SRC_DIR)/example
 
 scan-build: clean
 	@echo "+++ Running Clang Static Analyzer..."
-	scan-build $(MAKE) tests
+	scan-build $(MAKE) $(SRC_DIR)/tests
 
 clean:
-	$(RM) tests example *.o
+	$(RM) $(SRC_DIR)/tests $(SRC_DIR)/example $(SRC_DIR)/*.o
 
-tests: tests.o minmea.o
-example: example.o minmea.o
-tests.o: tests.c minmea.h
-minmea.o: minmea.c minmea.h
+$(SRC_DIR)/tests: $(SRC_DIR)/tests.o $(SRC_DIR)/minmea.o
+$(SRC_DIR)/example: $(SRC_DIR)/example.o $(SRC_DIR)/minmea.o
+$(SRC_DIR)/tests.o: $(SRC_DIR)/tests.c $(SRC_DIR)/minmea.h
+$(SRC_DIR)/minmea.o: $(SRC_DIR)/minmea.c $(SRC_DIR)/minmea.h
 
 .PHONY: all test scan-build clean

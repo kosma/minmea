@@ -2,8 +2,7 @@
 *~
 *.diff
 .*.swp
-minmea
-tests
-example
+minmea/tests
+minmea/example
 *.exe
 build
