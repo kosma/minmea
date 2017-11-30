@@ -123,6 +123,9 @@ while (fgets(line, sizeof(line), stdin) != NULL) {
 Simply add ``minmea.[ch]`` to your project, ``#include "minmea.h"`` and you're
 good to go.
 
+Alternatively for projects built with `meson`, add this repository in the
+`subprojects` directory and add minmea_dep as a dependency of your project.
+
 ## Running unit tests
 
 Building and running the tests requires the following:
@@ -132,6 +135,9 @@ Building and running the tests requires the following:
 
 If you have both in your ``$PATH``, running the tests should be as simple as
 typing ``make``.
+
+Alternatively if using `meson` to build minmea, invoke `ninja test` in the
+build directory to run the tests.
 
 ## Limitations
 
