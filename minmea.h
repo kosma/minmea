@@ -245,7 +245,7 @@ static inline float minmea_tofloat(struct minmea_float *f)
  */
 static inline float minmea_tocoord(struct minmea_float *f)
 {
-    if (f->scale == 0)
+    if (f->scale == 0 || f->scale <= 0)
         return NAN;
     int_least32_t degrees = f->value / (f->scale * 100);
     int_least32_t minutes = f->value % (f->scale * 100);
