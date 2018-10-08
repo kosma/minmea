@@ -79,7 +79,8 @@ bool minmea_check(const char *sentence, bool strict)
     }
 
     // The only stuff allowed at this point is a newline.
-    if (*sentence && strcmp(sentence, "\n") && strcmp(sentence, "\r\n"))
+	// I have seen GPS units returning sometimes the NMEA sentence with just '\r' - but it is still good sentence
+    if (*sentence && strcmp(sentence, "\n") && strcmp(sentence, "\r\n") && strncmp((char*)frameStr, "\r", 1) )
         return false;
 
     return true;
@@ -351,11 +352,13 @@ bool minmea_talker_id(char talker[3], const char *sentence)
 
 enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict)
 {
-    if (!minmea_check(sentence, strict))
+    char type[6];
+	// Check caller id first otherwise if it is missing minmea_check 
+	// will return the chuksum error instead of caller id error.
+    if (!minmea_scan(sentence, "t", type))
         return MINMEA_INVALID;
 
-    char type[6];
-    if (!minmea_scan(sentence, "t", type))
+    if (!minmea_check(sentence, strict))
         return MINMEA_INVALID;
 
     if (!strcmp(type+2, "RMC"))
