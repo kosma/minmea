@@ -6,3 +6,7 @@ minmea
 tests
 example
 *.exe
+*.gcno
+*.gcda
+*.info
+coverage/

@@ -6,6 +6,19 @@
 
 CFLAGS = -g -Wall -Wextra -Werror -std=c99
 CFLAGS += -D_POSIX_C_SOURCE=199309L -D_BSD_SOURCE -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE
+
+ifeq ($(MINMEA_COVERAGE),1)
+CFLAGS += -fprofile-arcs -ftest-coverage --coverage
+
+# Set LCOV if available
+LCOV := $(shell command -v lcov 2> /dev/null)
+endif
+
+# Optionally use AddressSanitizer and UndefinedBehaviorSanitizer
+ifeq ($(MINMEA_ASAN),1)
+CFLAGS += -fsanitize=address -fsanitize=undefined
+endif
+
 CFLAGS += $(shell pkg-config --cflags check)
 LDLIBS += $(shell pkg-config --libs check)
 
@@ -15,6 +28,16 @@ all: scan-build test example
 test: tests
 	@echo "+++ Running Check test suite..."
 	./tests
+	@# Run coverage if enabled
+ifeq ($(MINMEA_COVERAGE),1)
+ifdef LCOV
+	@echo "+++ Running lcov..."
+	lcov --quiet --rc lcov_branch_coverage=1 --capture --directory ./ --output-file coverage.info
+	lcov --quiet --rc lcov_branch_coverage=1 --remove coverage.info "*test*" -o coverage_filtered.info
+	genhtml --branch-coverage coverage_filtered.info --output-directory coverage
+	@echo "See file://$(abspath coverage)/index.html for lcov results"
+endif
+endif
 
 scan-build: clean
 	@echo "+++ Running Clang Static Analyzer..."
@@ -24,7 +47,11 @@ clean:
 	$(RM) tests example *.o
 
 tests: tests.o minmea.o
+	$(CC) $(CFLAGS) $^ $(LDLIBS) -o $@
+
 example: example.o minmea.o
+	$(CC) $(CFLAGS) $^ $(LDLIBS) -o $@
+
 tests.o: tests.c minmea.h
 minmea.o: minmea.c minmea.h
 
