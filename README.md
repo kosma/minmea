@@ -136,7 +136,7 @@ typing ``make``.
 You can optionally also enable coverage information and/or enable address and
 undefined behavior sanitizers when building and running the unit tests.
 Note that these features may require modern versions of gcc or clang (tested on
-gcc-8 and clang-7).
+gcc-8 and clang-7), and coverage is only supported with gcc.
 This example enables both sanitizers and coverage:
 ```bash
 MINMEA_COVERAGE=1 LCOV=lcov MINMEA_ASAN=1 CC=gcc-8 make

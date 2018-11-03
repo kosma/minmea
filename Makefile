@@ -8,10 +8,10 @@ CFLAGS = -g -Wall -Wextra -Werror -std=c99
 CFLAGS += -D_POSIX_C_SOURCE=199309L -D_BSD_SOURCE -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE
 
 ifeq ($(MINMEA_COVERAGE),1)
-CFLAGS += -fprofile-arcs -ftest-coverage --coverage
+CFLAGS += --coverage
 
 # Set LCOV if available
-LCOV := $(shell command -v lcov 2> /dev/null)
+LCOV ?=
 endif
 
 # Optionally use AddressSanitizer and UndefinedBehaviorSanitizer
@@ -32,8 +32,8 @@ test: tests
 ifeq ($(MINMEA_COVERAGE),1)
 ifdef LCOV
 	@echo "+++ Running lcov..."
-	lcov --quiet --rc lcov_branch_coverage=1 --capture --directory ./ --output-file coverage.info
-	lcov --quiet --rc lcov_branch_coverage=1 --remove coverage.info "*test*" -o coverage_filtered.info
+	$(LCOV) --quiet --rc lcov_branch_coverage=1 --capture --directory ./ --output-file coverage.info
+	$(LCOV) --quiet --rc lcov_branch_coverage=1 --remove coverage.info "*test*" -o coverage_filtered.info
 	genhtml --branch-coverage coverage_filtered.info --output-directory coverage
 	@echo "See file://$(abspath coverage)/index.html for lcov results"
 endif

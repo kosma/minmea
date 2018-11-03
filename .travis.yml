@@ -1,9 +1,20 @@
-language: c
-compiler:
-  - gcc
-  - clang
-install: sudo apt-get install check
-script: make test
+sudo: required
+
+language: generic
+
+services:
+  - docker
+
+# defer this build to a docker container to work around travis limitations on
+# linux distro version, and more explicitly control compiler tools versions.
+script:
+  - docker build -t minmea-test .
+  - docker run --cap-add SYS_PTRACE -e "TRAVIS_JOB_ID=$TRAVIS_JOB_ID"
+    -e "CC=gcc-7" -e "LCOV=lcov" -e "MINMEA_COVERAGE=1" -e "MINMEA_ASAN=1"
+    minmea-test
+  - docker run --cap-add SYS_PTRACE -e "TRAVIS_JOB_ID=$TRAVIS_JOB_ID"
+    -e "CC=clang-6.0" -e "MINMEA_COVERAGE=1" -e "MINMEA_ASAN=1" minmea-test
+
 notifications:
   email:
     on_success: change
