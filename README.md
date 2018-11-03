@@ -133,6 +133,19 @@ Building and running the tests requires the following:
 If you have both in your ``$PATH``, running the tests should be as simple as
 typing ``make``.
 
+You can optionally also enable coverage information and/or enable address and
+undefined behavior sanitizers when building and running the unit tests.
+Note that these features may require modern versions of gcc or clang (tested on
+gcc-8 and clang-7).
+This example enables both sanitizers and coverage:
+```bash
+MINMEA_COVERAGE=1 LCOV=lcov MINMEA_ASAN=1 CC=gcc-8 make
+...
+# if $LCOV is set to an appropriate coverage analysis tool (as above), html
+# output is generated at the end of the run and you'll see this print:
+See file://path-to-minmea-repo/coverage/index.html for lcov results
+```
+
 ## Limitations
 
 * Only a handful of frames is supported right now.
