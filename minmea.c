@@ -79,10 +79,19 @@ bool minmea_check(const char *sentence, bool strict)
     }
 
     // The only stuff allowed at this point is a newline.
-    if (*sentence && strcmp(sentence, "\n") && strcmp(sentence, "\r\n"))
+    // "\r" "\r\n" "\n" is allowed at this point
+    if (*sentence && 
+        ((strlen(sentence)==1 && strcmp(sentence, "\n")) || 
+        (strlen(sentence)==1 && strcmp(sentence, "\r")) || 
+        (strlen(sentence)==2 && strcmp(sentence, "\r\n")))){
+        return true;
+    }
+    else if(sentence == NULL){
+        return true;
+    }
+    else{
         return false;
-
-    return true;
+    }
 }
 
 static inline bool minmea_isfield(char c) {
