@@ -252,6 +252,25 @@ static inline float minmea_tocoord(struct minmea_float *f)
     return (float) degrees + (float) minutes / (60 * f->scale);
 }
 
+/**
+ * Convert a raw coordinate to a rescaled int DDDDD... value.
+ * Returns 0 for "unknown" values.
+ */
+static inline int_least32_t minmea_torescaledcoord(struct minmea_float *f, int_least32_t new_scale)
+{
+    int_least32_t degrees, minutes;
+    if (f->scale == 0)
+        return 0;
+    degrees = f->value / (f->scale * 100);
+    degrees *= new_scale;
+
+    minutes = f->value % (f->scale * 100);
+    minutes *= (new_scale / f->scale);
+    minutes /= 60;
+
+    return degrees + minutes;
+}
+
 #ifdef __cplusplus
 }
 #endif
