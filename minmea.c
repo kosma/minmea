@@ -410,36 +410,6 @@ bool minmea_parse_gbs(struct minmea_sentence_gbs *frame, const char *sentence)
     return true;
 }
 
-bool minmea_parse_rmc(struct minmea_sentence_rmc *frame, const char *sentence)
-{
-    // $GPRMC,081836,A,3751.65,S,14507.36,E,000.0,360.0,130998,011.3,E*62
-    char type[6];
-    char validity;
-    int latitude_direction;
-    int longitude_direction;
-    int variation_direction;
-    if (!minmea_scan(sentence, "tTcfdfdffDfd",
-            type,
-            &frame->time,
-            &validity,
-            &frame->latitude, &latitude_direction,
-            &frame->longitude, &longitude_direction,
-            &frame->speed,
-            &frame->course,
-            &frame->date,
-            &frame->variation, &variation_direction))
-        return false;
-    if (strcmp(type+2, "RMC"))
-        return false;
-
-    frame->valid = (validity == 'A');
-    frame->latitude.value *= latitude_direction;
-    frame->longitude.value *= longitude_direction;
-    frame->variation.value *= variation_direction;
-
-    return true;
-}
-
 bool minmea_parse_gga(struct minmea_sentence_gga *frame, const char *sentence)
 {
     // $GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47
@@ -460,6 +430,30 @@ bool minmea_parse_gga(struct minmea_sentence_gga *frame, const char *sentence)
             &frame->dgps_age))
         return false;
     if (strcmp(type+2, "GGA"))
+        return false;
+
+    frame->latitude.value *= latitude_direction;
+    frame->longitude.value *= longitude_direction;
+
+    return true;
+}
+
+bool minmea_parse_gll(struct minmea_sentence_gll *frame, const char *sentence)
+{
+    // $GPGLL,3723.2475,N,12158.3416,W,161229.487,A,A*41$;
+    char type[6];
+    int latitude_direction;
+    int longitude_direction;
+
+    if (!minmea_scan(sentence, "tfdfdTc;c",
+            type,
+            &frame->latitude, &latitude_direction,
+            &frame->longitude, &longitude_direction,
+            &frame->time,
+            &frame->status,
+            &frame->mode))
+        return false;
+    if (strcmp(type+2, "GLL"))
         return false;
 
     frame->latitude.value *= latitude_direction;
@@ -495,30 +489,6 @@ bool minmea_parse_gsa(struct minmea_sentence_gsa *frame, const char *sentence)
         return false;
     if (strcmp(type+2, "GSA"))
         return false;
-
-    return true;
-}
-
-bool minmea_parse_gll(struct minmea_sentence_gll *frame, const char *sentence)
-{
-    // $GPGLL,3723.2475,N,12158.3416,W,161229.487,A,A*41$;
-    char type[6];
-    int latitude_direction;
-    int longitude_direction;
-
-    if (!minmea_scan(sentence, "tfdfdTc;c",
-            type,
-            &frame->latitude, &latitude_direction,
-            &frame->longitude, &longitude_direction,
-            &frame->time,
-            &frame->status,
-            &frame->mode))
-        return false;
-    if (strcmp(type+2, "GLL"))
-        return false;
-
-    frame->latitude.value *= latitude_direction;
-    frame->longitude.value *= longitude_direction;
 
     return true;
 }
@@ -580,6 +550,36 @@ bool minmea_parse_gsv(struct minmea_sentence_gsv *frame, const char *sentence)
     }
     if (strcmp(type+2, "GSV"))
         return false;
+
+    return true;
+}
+
+bool minmea_parse_rmc(struct minmea_sentence_rmc *frame, const char *sentence)
+{
+    // $GPRMC,081836,A,3751.65,S,14507.36,E,000.0,360.0,130998,011.3,E*62
+    char type[6];
+    char validity;
+    int latitude_direction;
+    int longitude_direction;
+    int variation_direction;
+    if (!minmea_scan(sentence, "tTcfdfdffDfd",
+            type,
+            &frame->time,
+            &validity,
+            &frame->latitude, &latitude_direction,
+            &frame->longitude, &longitude_direction,
+            &frame->speed,
+            &frame->course,
+            &frame->date,
+            &frame->variation, &variation_direction))
+        return false;
+    if (strcmp(type+2, "RMC"))
+        return false;
+
+    frame->valid = (validity == 'A');
+    frame->latitude.value *= latitude_direction;
+    frame->longitude.value *= longitude_direction;
+    frame->variation.value *= variation_direction;
 
     return true;
 }

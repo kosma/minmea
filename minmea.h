@@ -68,17 +68,6 @@ struct minmea_sentence_gbs {
     struct minmea_float stddev;
 };
 
-struct minmea_sentence_rmc {
-    struct minmea_time time;
-    bool valid;
-    struct minmea_float latitude;
-    struct minmea_float longitude;
-    struct minmea_float speed;
-    struct minmea_float course;
-    struct minmea_date date;
-    struct minmea_float variation;
-};
-
 struct minmea_sentence_gga {
     struct minmea_time time;
     struct minmea_float latitude;
@@ -115,17 +104,6 @@ struct minmea_sentence_gll {
     char mode;
 };
 
-struct minmea_sentence_gst {
-    struct minmea_time time;
-    struct minmea_float rms_deviation;
-    struct minmea_float semi_major_deviation;
-    struct minmea_float semi_minor_deviation;
-    struct minmea_float semi_major_orientation;
-    struct minmea_float latitude_error_deviation;
-    struct minmea_float longitude_error_deviation;
-    struct minmea_float altitude_error_deviation;
-};
-
 enum minmea_gsa_mode {
     MINMEA_GPGSA_MODE_AUTO = 'A',
     MINMEA_GPGSA_MODE_FORCED = 'M',
@@ -146,6 +124,17 @@ struct minmea_sentence_gsa {
     struct minmea_float vdop;
 };
 
+struct minmea_sentence_gst {
+    struct minmea_time time;
+    struct minmea_float rms_deviation;
+    struct minmea_float semi_major_deviation;
+    struct minmea_float semi_minor_deviation;
+    struct minmea_float semi_major_orientation;
+    struct minmea_float latitude_error_deviation;
+    struct minmea_float longitude_error_deviation;
+    struct minmea_float altitude_error_deviation;
+};
+
 struct minmea_sat_info {
     int nr;
     int elevation;
@@ -158,6 +147,17 @@ struct minmea_sentence_gsv {
     int msg_nr;
     int total_sats;
     struct minmea_sat_info sats[4];
+};
+
+struct minmea_sentence_rmc {
+    struct minmea_time time;
+    bool valid;
+    struct minmea_float latitude;
+    struct minmea_float longitude;
+    struct minmea_float speed;
+    struct minmea_float course;
+    struct minmea_date date;
+    struct minmea_float variation;
 };
 
 struct minmea_sentence_vtg {
@@ -215,12 +215,12 @@ bool minmea_scan(const char *sentence, const char *format, ...);
  * Parse a specific type of sentence. Return true on success.
  */
 bool minmea_parse_gbs(struct minmea_sentence_gbs *frame, const char *sentence);
-bool minmea_parse_rmc(struct minmea_sentence_rmc *frame, const char *sentence);
 bool minmea_parse_gga(struct minmea_sentence_gga *frame, const char *sentence);
-bool minmea_parse_gsa(struct minmea_sentence_gsa *frame, const char *sentence);
 bool minmea_parse_gll(struct minmea_sentence_gll *frame, const char *sentence);
+bool minmea_parse_gsa(struct minmea_sentence_gsa *frame, const char *sentence);
 bool minmea_parse_gst(struct minmea_sentence_gst *frame, const char *sentence);
 bool minmea_parse_gsv(struct minmea_sentence_gsv *frame, const char *sentence);
+bool minmea_parse_rmc(struct minmea_sentence_rmc *frame, const char *sentence);
 bool minmea_parse_vtg(struct minmea_sentence_vtg *frame, const char *sentence);
 bool minmea_parse_zda(struct minmea_sentence_zda *frame, const char *sentence);
 
