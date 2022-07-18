@@ -288,7 +288,7 @@ bool minmea_scan(const char *sentence, const char *format, ...)
             } break;
 
             case 'T': { // Time (int, int, int, int), -1 if empty.
-                struct minmea_time *time_ = va_arg(ap, struct minmea_time *);
+                struct minmea_time *time = va_arg(ap, struct minmea_time *);
 
                 int h = -1, i = -1, s = -1, u = -1;
 
@@ -320,10 +320,10 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                     }
                 }
 
-                time_->hours = h;
-                time_->minutes = i;
-                time_->seconds = s;
-                time_->microseconds = u;
+                time->hours = h;
+                time->minutes = i;
+                time->seconds = s;
+                time->microseconds = u;
             } break;
 
             case '_': { // Ignore the field.
@@ -647,9 +647,9 @@ bool minmea_parse_zda(struct minmea_sentence_zda *frame, const char *sentence)
   return true;
 }
 
-int minmea_getdatetime(struct tm *tm, const struct minmea_date *date, const struct minmea_time *time_)
+int minmea_getdatetime(struct tm *tm, const struct minmea_date *date, const struct minmea_time *time)
 {
-    if (date->year == -1 || time_->hours == -1)
+    if (date->year == -1 || time->hours == -1)
         return -1;
 
     memset(tm, 0, sizeof(*tm));
@@ -662,23 +662,23 @@ int minmea_getdatetime(struct tm *tm, const struct minmea_date *date, const stru
     }
     tm->tm_mon = date->month - 1;
     tm->tm_mday = date->day;
-    tm->tm_hour = time_->hours;
-    tm->tm_min = time_->minutes;
-    tm->tm_sec = time_->seconds;
+    tm->tm_hour = time->hours;
+    tm->tm_min = time->minutes;
+    tm->tm_sec = time->seconds;
 
     return 0;
 }
 
-int minmea_gettime(struct timespec *ts, const struct minmea_date *date, const struct minmea_time *time_)
+int minmea_gettime(struct timespec *ts, const struct minmea_date *date, const struct minmea_time *time)
 {
     struct tm tm;
-    if (minmea_getdatetime(&tm, date, time_))
+    if (minmea_getdatetime(&tm, date, time))
         return -1;
 
     time_t timestamp = timegm(&tm); /* See README.md if your system lacks timegm(). */
     if (timestamp != (time_t)-1) {
         ts->tv_sec = timestamp;
-        ts->tv_nsec = time_->microseconds * 1000;
+        ts->tv_nsec = time->microseconds * 1000;
         return 0;
     } else {
         return -1;
