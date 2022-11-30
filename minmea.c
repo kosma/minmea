@@ -35,7 +35,7 @@ uint8_t minmea_checksum(const char *sentence)
 
     // The optional checksum is an XOR of all bytes between "$" and "*".
     while (*sentence && *sentence != '*')
-        checksum ^= *sentence++;
+        checksum ^= (uint8_t)*sentence++;
 
     return checksum;
 }
@@ -50,7 +50,7 @@ bool minmea_check(const char *sentence, bool strict)
 
     // The optional checksum is an XOR of all bytes between "$" and "*".
     while (*sentence && *sentence != '*' && isprint((unsigned char) *sentence))
-        checksum ^= *sentence++;
+        checksum ^= (uint8_t)*sentence++;
 
     // If checksum is present...
     if (*sentence == '*') {
@@ -302,7 +302,7 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                         uint32_t value = 0;
                         uint32_t scale = 1000000LU;
                         while (isdigit((unsigned char) *field) && scale > 1) {
-                            value = (value * 10) + (*field++ - '0');
+                            value = (value * 10) + (unsigned char)(*field++ - '0');
                             scale /= 10;
                         }
                         u = value * scale;
