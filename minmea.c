@@ -305,7 +305,7 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                             value = (value * 10) + (unsigned char)(*field++ - '0');
                             scale /= 10;
                         }
-                        u = value * scale;
+                        u = (int)(value * scale);
                     } else {
                         u = 0;
                     }
