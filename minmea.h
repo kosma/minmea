@@ -74,12 +74,14 @@ struct minmea_sentence_gns {
     struct minmea_time time;
     struct minmea_float latitude;
     struct minmea_float longitude;
-    char posMode; // keep it char??
+    char* posMode; // TODO: check this works
     int numSV;
     struct minmea_float hdop;
     struct minmea_float altitude;
     struct minmea_float separation;
-    bool valid;
+    int diffAge;
+    int diffStation;
+    char navStatus;
 };
 
 struct minmea_sentence_rmc {
