@@ -76,7 +76,7 @@ bool minmea_check(const char *sentence, bool strict)
     while (*sentence == '\r' || *sentence == '\n') {
         sentence++;
     }
-    
+
     if (*sentence) {
         return false;
     }
@@ -399,6 +399,37 @@ bool minmea_parse_gbs(struct minmea_sentence_gbs *frame, const char *sentence)
         return false;
 
     return true;
+}
+
+bool minmea_parse_gns(struct minmea_sentence_gns *frame, const char *sentence)
+{
+    // $GNGNS,103600.01,5114.51176,N,00012.29380,W,ANNN,07,1.18,111.5,45.6,,,V*00
+    char type[6];
+    char validity;
+    int latitude_direction;
+    int longitude_direction;
+    int diffAge;
+    int diffStation;
+    if (!minmea_scan(sentence, "tTfdfdcdfffddc",
+            type,
+            &frame->time,
+            &frame->latitude, &latitude_direction,
+            &frame->longitude, &longitude_direction,
+            &frame->posMode,
+            &frame->numSV,
+            &frame->hdop,
+            &frame->altitude,
+            &frame->separation,
+            &diffAge, &diffStation,
+            &validity))
+        return false;
+    if (strcmp(type+2, "GNS"))
+        return false;
+
+    // TODO: figure out if these are the modifications we want
+    frame->latitude.value *= latitude_direction;
+    frame->longitude.value *= longitude_direction;
+    frame->valid = (validity == 'A');
 }
 
 bool minmea_parse_rmc(struct minmea_sentence_rmc *frame, const char *sentence)

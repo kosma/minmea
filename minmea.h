@@ -32,6 +32,7 @@ enum minmea_sentence_id {
     MINMEA_SENTENCE_GBS,
     MINMEA_SENTENCE_GGA,
     MINMEA_SENTENCE_GLL,
+    MINMEA_SENTENCE_GNS,
     MINMEA_SENTENCE_GSA,
     MINMEA_SENTENCE_GST,
     MINMEA_SENTENCE_GSV,
@@ -67,6 +68,18 @@ struct minmea_sentence_gbs {
     struct minmea_float prob;
     struct minmea_float bias;
     struct minmea_float stddev;
+};
+
+struct minmea_sentence_gns {
+    struct minmea_time time;
+    struct minmea_float latitude;
+    struct minmea_float longitude;
+    char posMode; // keep it char??
+    int numSV;
+    struct minmea_float hdop;
+    struct minmea_float altitude;
+    struct minmea_float separation;
+    bool valid;
 };
 
 struct minmea_sentence_rmc {
