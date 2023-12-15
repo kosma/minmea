@@ -515,6 +515,53 @@ START_TEST(test_minmea_parse_gbs2)
 }
 END_TEST
 
+START_TEST(test_minmea_parse_gns1)
+{
+    const char *sentence = "$GNGNS,183734.00,3841.26267,N,09015.35134,W,ANAANN,15,2.15,220.0,-32.0,,,V*2F";
+    struct minmea_sentence_gns frame = {};
+    // TODO: confirm my assumptions here
+    static const struct minmea_sentence_gns expected = {
+        .time = { 18, 37, 34 },
+        .latitude = { 384126267, 100000 },
+        .longitude = { -901535134, 100000 },
+        .posMode = "ANAANN",
+        .numSV = 15,
+        .hdop = { 215, 100 },
+        .altitude = { 2200, 10 },
+        .separation = { -320, 10 },
+        .diffAge = 0,
+        .diffStation = 0, // if not included, what should they be??
+        .navStatus = 'V',
+    };
+    ck_assert(minmea_check(sentence, false) == true);
+    ck_assert(minmea_check(sentence, true) == true);
+    ck_assert(minmea_parse_gns(&frame, sentence) == true);
+    ck_assert(!memcmp(&frame, &expected, sizeof(frame)));
+}
+
+START_TEST(test_minmea_parse_gns2)
+{
+    const char *sentence = "$GNGNS,183737.00,3841.26462,N,09015.35010,W,AAAA,16,1.15,220.8,-32.0,100,5,V";
+    struct minmea_sentence_gns frame = {};
+    static const struct minmea_sentence_gns expected = {
+        .time = { 18, 37, 37 },
+        .latitude = { 384126462, 100000 },
+        .longitude = { -901535010, 100000 },
+        .posMode = "AAAA",
+        .numSV = 16,
+        .hdop = { 115, 100 },
+        .altitude = { 2208, 10 },
+        .separation = { -320, 10 },
+        .diffAge = 100,
+        .diffStation = 5,
+        .navStatus = 'V',
+    };
+    ck_assert(minmea_check(sentence, false) == true);
+    ck_assert(minmea_check(sentence, true) == false);
+    ck_assert(minmea_parse_gns(&frame, sentence) == true);
+    ck_assert(!memcmp(&frame, &expected, sizeof(frame)));
+}
+
 START_TEST(test_minmea_parse_rmc1)
 {
     const char *sentence = "$GPRMC,081836.75,A,3751.65,S,14507.36,E,000.0,360.0,130998,011.3,E";
@@ -1161,6 +1208,8 @@ static Suite *minmea_suite(void)
     TCase *tc_parse = tcase_create("minmea_parse");
     tcase_add_test(tc_parse, test_minmea_parse_gbs1);
     tcase_add_test(tc_parse, test_minmea_parse_gbs2);
+    tcase_add_test(tc_parse, test_minmea_parse_gns1);
+    tcase_add_test(tc_parse, test_minmea_parse_gns2);
     tcase_add_test(tc_parse, test_minmea_parse_rmc1);
     tcase_add_test(tc_parse, test_minmea_parse_rmc2);
     tcase_add_test(tc_parse, test_minmea_parse_gga1);

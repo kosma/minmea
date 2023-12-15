@@ -231,6 +231,7 @@ bool minmea_scan(const char *sentence, const char *format, ...);
  * Parse a specific type of sentence. Return true on success.
  */
 bool minmea_parse_gbs(struct minmea_sentence_gbs *frame, const char *sentence);
+bool minmea_parse_gns(struct minmea_sentence_gns *frame, const char *sentence);
 bool minmea_parse_rmc(struct minmea_sentence_rmc *frame, const char *sentence);
 bool minmea_parse_gga(struct minmea_sentence_gga *frame, const char *sentence);
 bool minmea_parse_gsa(struct minmea_sentence_gsa *frame, const char *sentence);
