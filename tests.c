@@ -519,9 +519,8 @@ START_TEST(test_minmea_parse_gns1)
 {
     const char *sentence = "$GNGNS,183734.00,3841.26267,N,09015.35134,W,ANAANN,15,2.15,220.0,-32.0,,,V*2F";
     struct minmea_sentence_gns frame = {};
-    // TODO: confirm my assumptions here
     static const struct minmea_sentence_gns expected = {
-        .time = { 18, 37, 34 },
+        .time = { 18, 37, 34, 0 },
         .latitude = { 384126267, 100000 },
         .longitude = { -901535134, 100000 },
         .posMode = "ANAANN",
@@ -530,14 +529,24 @@ START_TEST(test_minmea_parse_gns1)
         .altitude = { 2200, 10 },
         .separation = { -320, 10 },
         .diffAge = 0,
-        .diffStation = 0, // if not included, what should they be??
+        .diffStation = 0,
         .navStatus = 'V',
     };
     ck_assert(minmea_check(sentence, false) == true);
     ck_assert(minmea_check(sentence, true) == true);
     ck_assert(minmea_parse_gns(&frame, sentence) == true);
-    ck_assert(!memcmp(&frame, &expected, sizeof(frame)));
+
+    ck_assert(!memcmp(&frame, &expected, 32)); // memcmp everything up to string
+    ck_assert(!strncmp(frame.posMode, expected.posMode, strnlen(frame.posMode, MINMEA_MAX_SENTENCE_LENGTH)));
+    ck_assert(frame.numSV == expected.numSV);
+    ck_assert(frame.hdop.scale == expected.hdop.scale && frame.hdop.value == frame.hdop.value);
+    ck_assert(frame.altitude.value == expected.altitude.value && frame.altitude.scale == expected.altitude.scale);
+    ck_assert(frame.separation.value == expected.separation.value && frame.separation.scale == expected.separation.scale);
+    ck_assert(frame.diffAge == expected.diffAge);
+    ck_assert(frame.diffStation == expected.diffStation);
+    ck_assert(frame.navStatus == expected.navStatus);
 }
+END_TEST
 
 START_TEST(test_minmea_parse_gns2)
 {
@@ -559,8 +568,18 @@ START_TEST(test_minmea_parse_gns2)
     ck_assert(minmea_check(sentence, false) == true);
     ck_assert(minmea_check(sentence, true) == false);
     ck_assert(minmea_parse_gns(&frame, sentence) == true);
-    ck_assert(!memcmp(&frame, &expected, sizeof(frame)));
+
+    ck_assert(!memcmp(&frame, &expected, 32)); // memcmp everything up to string
+    ck_assert(!strncmp(frame.posMode, expected.posMode, strnlen(frame.posMode, MINMEA_MAX_SENTENCE_LENGTH)));
+    ck_assert(frame.numSV == expected.numSV);
+    ck_assert(frame.hdop.scale == expected.hdop.scale && frame.hdop.value == frame.hdop.value);
+    ck_assert(frame.altitude.value == expected.altitude.value && frame.altitude.scale == expected.altitude.scale);
+    ck_assert(frame.separation.value == expected.separation.value && frame.separation.scale == expected.separation.scale);
+    ck_assert(frame.diffAge == expected.diffAge);
+    ck_assert(frame.diffStation == expected.diffStation);
+    ck_assert(frame.navStatus == expected.navStatus);
 }
+END_TEST
 
 START_TEST(test_minmea_parse_rmc1)
 {

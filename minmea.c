@@ -405,6 +405,7 @@ bool minmea_parse_gns(struct minmea_sentence_gns *frame, const char *sentence)
 {
     // $GNGNS,103600.01,5114.51176,N,00012.29380,W,ANNN,07,1.18,111.5,45.6,,,V*00
     char type[6];
+    static char value[7]; // TODO: 7 may be a limit...increase? Also, altenative is pass a buffer to hold this, instead of declaring as static
     int latitude_direction;
     int longitude_direction;
     if (!minmea_scan(sentence, "tTfdfdsifffiic",
@@ -412,7 +413,7 @@ bool minmea_parse_gns(struct minmea_sentence_gns *frame, const char *sentence)
             &frame->time,
             &frame->latitude, &latitude_direction,
             &frame->longitude, &longitude_direction,
-            &frame->posMode,
+            value,
             &frame->numSV,
             &frame->hdop,
             &frame->altitude,
@@ -426,6 +427,7 @@ bool minmea_parse_gns(struct minmea_sentence_gns *frame, const char *sentence)
 
     frame->latitude.value *= latitude_direction;
     frame->longitude.value *= longitude_direction;
+    frame->posMode = value;
 
     return true;
 }

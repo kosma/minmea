@@ -74,7 +74,7 @@ struct minmea_sentence_gns {
     struct minmea_time time;
     struct minmea_float latitude;
     struct minmea_float longitude;
-    char* posMode; // TODO: check this works
+    char* posMode;
     int numSV;
     struct minmea_float hdop;
     struct minmea_float altitude;
