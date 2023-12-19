@@ -32,6 +32,7 @@ enum minmea_sentence_id {
     MINMEA_SENTENCE_GBS,
     MINMEA_SENTENCE_GGA,
     MINMEA_SENTENCE_GLL,
+    MINMEA_SENTENCE_GNS,
     MINMEA_SENTENCE_GSA,
     MINMEA_SENTENCE_GST,
     MINMEA_SENTENCE_GSV,
@@ -67,6 +68,20 @@ struct minmea_sentence_gbs {
     struct minmea_float prob;
     struct minmea_float bias;
     struct minmea_float stddev;
+};
+
+struct minmea_sentence_gns {
+    struct minmea_time time;
+    struct minmea_float latitude;
+    struct minmea_float longitude;
+    char* posMode;
+    int numSV;
+    struct minmea_float hdop;
+    struct minmea_float altitude;
+    struct minmea_float separation;
+    int diffAge;
+    int diffStation;
+    char navStatus;
 };
 
 struct minmea_sentence_rmc {
@@ -216,6 +231,7 @@ bool minmea_scan(const char *sentence, const char *format, ...);
  * Parse a specific type of sentence. Return true on success.
  */
 bool minmea_parse_gbs(struct minmea_sentence_gbs *frame, const char *sentence);
+bool minmea_parse_gns(struct minmea_sentence_gns *frame, const char *sentence);
 bool minmea_parse_rmc(struct minmea_sentence_rmc *frame, const char *sentence);
 bool minmea_parse_gga(struct minmea_sentence_gga *frame, const char *sentence);
 bool minmea_parse_gsa(struct minmea_sentence_gsa *frame, const char *sentence);
