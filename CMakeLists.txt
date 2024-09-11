@@ -37,3 +37,16 @@ if (SCAN_FOUND)
 else()
     MESSAGE(STATUS "scan-build not found, not scanning code")
 endif()
+
+include(GNUInstallDirs)
+
+install(TARGETS minmea
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+install(FILES minmea.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+if(MSVC)
+    install(FILES compat/minmea_compat_windows.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        RENAME minmea_compat.h)
+endif()
