@@ -76,7 +76,7 @@ bool minmea_check(const char *sentence, bool strict)
     while (*sentence == '\r' || *sentence == '\n') {
         sentence++;
     }
-    
+
     if (*sentence) {
         return false;
     }
@@ -397,6 +397,38 @@ bool minmea_parse_gbs(struct minmea_sentence_gbs *frame, const char *sentence)
         return false;
     if (strcmp(type+2, "GBS"))
         return false;
+
+    return true;
+}
+
+bool minmea_parse_gns(struct minmea_sentence_gns *frame, const char *sentence)
+{
+    // $GNGNS,103600.01,5114.51176,N,00012.29380,W,ANNN,07,1.18,111.5,45.6,,,V*00
+    char type[6];
+    // NOTE: NMEA revealed says the posMode field can be 1-4 chars, however, some receivers have more (ublox MAXM10S returns 6)
+    static char value[10]; // Altenative is pass a buffer to hold this, instead of declaring as static
+    int latitude_direction;
+    int longitude_direction;
+    if (!minmea_scan(sentence, "tTfdfdsifffiic",
+            type,
+            &frame->time,
+            &frame->latitude, &latitude_direction,
+            &frame->longitude, &longitude_direction,
+            value,
+            &frame->numSV,
+            &frame->hdop,
+            &frame->altitude,
+            &frame->separation,
+            &frame->diffAge,
+            &frame->diffStation,
+            &frame->navStatus))
+        return false;
+    if (strcmp(type+2, "GNS"))
+        return false;
+
+    frame->latitude.value *= latitude_direction;
+    frame->longitude.value *= longitude_direction;
+    frame->posMode = value;
 
     return true;
 }
