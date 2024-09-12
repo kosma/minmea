@@ -262,10 +262,10 @@ static inline float minmea_tofloat(const struct minmea_float *f)
 }
 
 /**
- * Convert a raw coordinate to a floating point DD.DDD... value.
+ * Convert a raw coordinate to a double floating point DD.DDD... value.
  * Returns NaN for "unknown" values.
  */
-static inline float minmea_tocoord(const struct minmea_float *f)
+static inline double minmea_tocoord(const struct minmea_float *f)
 {
     if (f->scale == 0)
         return NAN;
@@ -275,7 +275,7 @@ static inline float minmea_tocoord(const struct minmea_float *f)
         return NAN;
     int_least32_t degrees = f->value / (f->scale * 100);
     int_least32_t minutes = f->value % (f->scale * 100);
-    return (float) degrees + (float) minutes / (60 * f->scale);
+    return (double) degrees + (double) minutes / (60 * f->scale);
 }
 
 /**
