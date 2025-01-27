@@ -415,7 +415,7 @@ bool minmea_parse_rmc(struct minmea_sentence_rmc *frame, const char *sentence)
     int latitude_direction;
     int longitude_direction;
     int variation_direction;
-    if (!minmea_scan(sentence, "tTcfdfdffDfd",
+    if (!minmea_scan(sentence, "tTcFdFdffDfd",
             type,
             &frame->time,
             &validity,
@@ -444,7 +444,7 @@ bool minmea_parse_gga(struct minmea_sentence_gga *frame, const char *sentence)
     int latitude_direction;
     int longitude_direction;
 
-    if (!minmea_scan(sentence, "tTfdfdiiffcfcf_",
+    if (!minmea_scan(sentence, "tTFdFdiiffcfcf_",
             type,
             &frame->time,
             &frame->latitude, &latitude_direction,
@@ -503,7 +503,7 @@ bool minmea_parse_gll(struct minmea_sentence_gll *frame, const char *sentence)
     int latitude_direction;
     int longitude_direction;
 
-    if (!minmea_scan(sentence, "tfdfdTc;c",
+    if (!minmea_scan(sentence, "tFdFdTc;c",
             type,
             &frame->latitude, &latitude_direction,
             &frame->longitude, &longitude_direction,

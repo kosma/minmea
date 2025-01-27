@@ -577,8 +577,8 @@ START_TEST(test_minmea_parse_gga1)
     struct minmea_sentence_gga frame = {};
     struct minmea_sentence_gga expected = {};
     expected.time = (struct minmea_time) { 12, 35, 19, 0 };
-    expected.latitude = (struct minmea_float) { 4807038, 1000 };
-    expected.longitude = (struct minmea_float) { 1131000, 1000 };
+    expected.latitude = (struct minmea_double) { 4807038, 1000 };
+    expected.longitude = (struct minmea_double) { 1131000, 1000 };
     expected.fix_quality = 1;
     expected.satellites_tracked = 8;
     expected.hdop = (struct minmea_float) { 9, 10 };
@@ -645,8 +645,8 @@ START_TEST(test_minmea_parse_gll1)
     memset(&frame, 0, sizeof(frame));
     memset(&expected, 0, sizeof(expected));
 
-    expected.latitude = (struct minmea_float){ 37232475, 10000 };
-    expected.longitude = (struct minmea_float){ -121583416, 10000 };
+    expected.latitude = (struct minmea_double){ 37232475, 10000 };
+    expected.longitude = (struct minmea_double){ -121583416, 10000 };
     expected.time = (struct minmea_time){ 16, 12, 29, 487000 };
     expected.status = MINMEA_GLL_STATUS_DATA_VALID;
     expected.mode = MINMEA_FAA_MODE_AUTONOMOUS;
@@ -1153,10 +1153,10 @@ END_TEST
 
 START_TEST(test_minmea_coord)
 {
-    ck_assert(isnan(minmea_tocoord(&(struct minmea_float) { 42, 0 })));
-    assert_float_eq(minmea_tocoord(&(struct minmea_float) { 4200, 1 }), 42.0f);
-    assert_float_eq(minmea_tocoord(&(struct minmea_float) { 420000, 100 }), 42.0f);
-    assert_float_eq(minmea_tocoord(&(struct minmea_float) { 423000, 100 }), 42.5f);
+    ck_assert(isnan(minmea_tocoord(&(struct minmea_double) { 42, 0 })));
+    assert_double_eq(minmea_tocoord(&(struct minmea_double) { 4200, 1 }), 42.0);
+    assert_double_eq(minmea_tocoord(&(struct minmea_double) { 420000, 100 }), 42.0);
+    assert_double_eq(minmea_tocoord(&(struct minmea_double) { 423000, 100 }), 42.5);
 }
 END_TEST
 

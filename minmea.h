@@ -77,8 +77,8 @@ struct minmea_sentence_gbs {
 struct minmea_sentence_rmc {
     struct minmea_time time;
     bool valid;
-    struct minmea_float latitude;
-    struct minmea_float longitude;
+    struct minmea_double latitude;
+    struct minmea_double longitude;
     struct minmea_float speed;
     struct minmea_float course;
     struct minmea_date date;
@@ -87,8 +87,8 @@ struct minmea_sentence_rmc {
 
 struct minmea_sentence_gga {
     struct minmea_time time;
-    struct minmea_float latitude;
-    struct minmea_float longitude;
+    struct minmea_double latitude;
+    struct minmea_double longitude;
     int fix_quality;
     int satellites_tracked;
     struct minmea_float hdop;
@@ -114,8 +114,8 @@ enum minmea_faa_mode {
 };
 
 struct minmea_sentence_gll {
-    struct minmea_float latitude;
-    struct minmea_float longitude;
+    struct minmea_double latitude;
+    struct minmea_double longitude;
     struct minmea_time time;
     char status;
     char mode;
@@ -297,17 +297,17 @@ static inline double minmea_todouble(const struct minmea_double *d)
  * Convert a raw coordinate to a floating point DD.DDD... value.
  * Returns NaN for "unknown" values.
  */
-static inline float minmea_tocoord(const struct minmea_float *f)
+static inline double minmea_tocoord(const struct minmea_double *d)
 {
-    if (f->scale == 0)
+    if (d->scale == 0)
         return NAN;
-    if (f->scale  > (INT_LEAST32_MAX / 100))
+    if (d->scale  > (INT_LEAST64_MAX / 100))
         return NAN;
-    if (f->scale < (INT_LEAST32_MIN / 100))
+    if (d->scale < (INT_LEAST64_MIN / 100))
         return NAN;
-    int_least32_t degrees = f->value / (f->scale * 100);
-    int_least32_t minutes = f->value % (f->scale * 100);
-    return (float) degrees + (float) minutes / (60 * f->scale);
+    int_least64_t degrees = d->value / (d->scale * 100);
+    int_least64_t minutes = d->value % (d->scale * 100);
+    return (double) degrees + (double) minutes / (60 * d->scale);
 }
 
 /**

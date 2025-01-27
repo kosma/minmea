@@ -22,13 +22,13 @@ int main(void)
             case MINMEA_SENTENCE_RMC: {
                 struct minmea_sentence_rmc frame;
                 if (minmea_parse_rmc(&frame, line)) {
-                    printf(INDENT_SPACES "$xxRMC: raw coordinates and speed: (%d/%d,%d/%d) %d/%d\n",
+                    printf(INDENT_SPACES "$xxRMC: raw coordinates and speed: (%ld/%ld,%ld/%ld) %d/%d\n",
                             frame.latitude.value, frame.latitude.scale,
                             frame.longitude.value, frame.longitude.scale,
                             frame.speed.value, frame.speed.scale);
-                    printf(INDENT_SPACES "$xxRMC fixed-point coordinates and speed scaled to three decimal places: (%d,%d) %d\n",
-                            minmea_rescale(&frame.latitude, 1000),
-                            minmea_rescale(&frame.longitude, 1000),
+                    printf(INDENT_SPACES "$xxRMC fixed-point coordinates and speed scaled to three decimal places: (%ld,%ld) %d\n",
+                            minmea_rescale_double(&frame.latitude, 1000),
+                            minmea_rescale_double(&frame.longitude, 1000),
                             minmea_rescale(&frame.speed, 1000));
                     printf(INDENT_SPACES "$xxRMC floating point degree coordinates and speed: (%f,%f) %f\n",
                             minmea_tocoord(&frame.latitude),
