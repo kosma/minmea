@@ -45,6 +45,11 @@ struct minmea_float {
     int_least32_t scale;
 };
 
+struct minmea_double {
+    int_least64_t value;
+    int_least64_t scale;
+};
+
 struct minmea_date {
     int day;
     int month;
@@ -201,6 +206,7 @@ enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict);
  * c - single character (char *)
  * d - direction, returned as 1/-1, default 0 (int *)
  * f - fractional, returned as value + scale (struct minmea_float *)
+ * F - double fractional, returned as value + scale (struct minmea_double *)
  * i - decimal, default zero (int *)
  * s - string (char *)
  * t - talker identifier and type (char *)
@@ -251,6 +257,21 @@ static inline int_least32_t minmea_rescale(const struct minmea_float *f, int_lea
 }
 
 /**
+ * Rescale a double-precision fixed-point value to a different scale. Rounds towards zero.
+ */
+static inline int_least64_t minmea_rescale_double(const struct minmea_double *d, int_least64_t new_scale)
+{
+    if (d->scale == 0)
+        return 0;
+    if (d->scale == new_scale)
+        return d->value;
+    if (d->scale > new_scale)
+        return (d->value + ((d->value > 0) - (d->value < 0)) * d->scale/new_scale/2) / (d->scale/new_scale);
+    else
+        return d->value * (new_scale/d->scale);
+}
+
+/**
  * Convert a fixed-point value to a floating-point value.
  * Returns NaN for "unknown" values.
  */
@@ -259,6 +280,17 @@ static inline float minmea_tofloat(const struct minmea_float *f)
     if (f->scale == 0)
         return NAN;
     return (float) f->value / (float) f->scale;
+}
+
+/**
+ * Convert a fixed-point value to a floating-point value.
+ * Returns NaN for "unknown" values.
+ */
+static inline double minmea_todouble(const struct minmea_double *d)
+{
+    if (d->scale == 0)
+        return NAN;
+    return (double) d->value / (double) d->scale;
 }
 
 /**

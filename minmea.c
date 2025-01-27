@@ -155,10 +155,12 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                 *va_arg(ap, int *) = value;
             } break;
 
-            case 'f': { // Fractional value with scale (struct minmea_float).
+            case 'f':
+            case 'F': { // Fractional value with scale (struct minmea_float/minmea_double).
                 int sign = 0;
-                int_least32_t value = -1;
-                int_least32_t scale = 0;
+                int_least64_t value = -1;
+                int_least64_t scale = 0;
+                int_least64_t max = type == 'f' ? INT_LEAST32_MAX : INT_LEAST64_MAX;
 
                 if (field) {
                     while (minmea_isfield(*field)) {
@@ -170,7 +172,7 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                             int digit = *field - '0';
                             if (value == -1)
                                 value = 0;
-                            if (value > (INT_LEAST32_MAX-digit) / 10) {
+                            if (value > (max-digit) / 10) {
                                 /* we ran out of bits, what do we do? */
                                 if (scale) {
                                     /* truncate extra precision */
@@ -211,7 +213,11 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                 if (sign)
                     value *= sign;
 
-                *va_arg(ap, struct minmea_float *) = (struct minmea_float) {value, scale};
+                if (type == 'f') {
+                    *va_arg(ap, struct minmea_float *) = (struct minmea_float) {value, scale};
+                } else {
+                    *va_arg(ap, struct minmea_double *) = (struct minmea_double) {value, scale};
+                }
             } break;
 
             case 'i': { // Integer value, default 0 (int).

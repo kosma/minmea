@@ -236,6 +236,23 @@ START_TEST(test_minmea_scan_f)
 }
 END_TEST
 
+
+START_TEST(test_minmea_scan_F)
+{
+    struct minmea_double f;
+
+    ck_assert(minmea_scan("9223372036854775807", "F", &f) == true);
+    ck_assert_int_eq((int64_t) f.value, 9223372036854775807LL);
+    ck_assert_int_eq(f.scale, 1);
+    /* doesn't fit, truncate precision */
+    ck_assert(minmea_scan("9223372036854775.808", "F", &f) == true);
+    ck_assert_int_eq((int64_t) f.value, 922337203685477580LL);
+    ck_assert_int_eq(f.scale, 100);
+    /* doesn't fit, bail out */
+    ck_assert(minmea_scan("9223372036854775808", "F", &f) == false);
+}
+END_TEST
+
 START_TEST(test_minmea_scan_i)
 {
     int value, extra;
@@ -1123,6 +1140,17 @@ START_TEST(test_minmea_float)
 }
 END_TEST
 
+#define assert_double_eq(x, y) ck_assert(fabs((x) - (y)) <= 0.0)
+
+START_TEST(test_minmea_double)
+{
+    ck_assert(isnan(minmea_todouble(&(struct minmea_double) { 42, 0 })));
+    assert_double_eq(minmea_todouble(&(struct minmea_double) { 7, 1 }), 7.0);
+    assert_double_eq(minmea_todouble(&(struct minmea_double) { -200, 100 }), -2.0);
+    assert_double_eq(minmea_todouble(&(struct minmea_double) { 15, 10 }), 1.5);
+}
+END_TEST
+
 START_TEST(test_minmea_coord)
 {
     ck_assert(isnan(minmea_tocoord(&(struct minmea_float) { 42, 0 })));
@@ -1148,6 +1176,7 @@ static Suite *minmea_suite(void)
     tcase_add_test(tc_scan, test_minmea_scan_c);
     tcase_add_test(tc_scan, test_minmea_scan_d);
     tcase_add_test(tc_scan, test_minmea_scan_f);
+    tcase_add_test(tc_scan, test_minmea_scan_F);
     tcase_add_test(tc_scan, test_minmea_scan_i);
     tcase_add_test(tc_scan, test_minmea_scan_s);
     tcase_add_test(tc_scan, test_minmea_scan_t);
@@ -1187,6 +1216,7 @@ static Suite *minmea_suite(void)
     tcase_add_test(tc_utils, test_minmea_gettime);
     tcase_add_test(tc_utils, test_minmea_rescale);
     tcase_add_test(tc_utils, test_minmea_float);
+    tcase_add_test(tc_utils, test_minmea_double);
     tcase_add_test(tc_utils, test_minmea_coord);
     suite_add_tcase(s, tc_utils);
 
