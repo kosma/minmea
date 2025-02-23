@@ -92,6 +92,15 @@ struct minmea_sentence_gga {
     struct minmea_float dgps_age;
 };
 
+enum minmea_gga_fix_quality {
+    MINMEA_GGA_FIX_QUALITY_NO_FIX = 0,
+    MINMEA_GGA_FIX_QUALITY_GPS = 1,
+    MINMEA_GGA_FIX_QUALITY_DIFFERENTIAL_GPS = 2,
+    MINMEA_GGA_FIX_QUALITY_RTK_FIXED = 4,
+    MINMEA_GGA_FIX_QUALITY_RTK_FLOAT = 5,
+    MINMEA_GGA_FIX_QUALITY_ESTIMATED_DR = 6
+};
+
 enum minmea_gll_status {
     MINMEA_GLL_STATUS_DATA_VALID = 'A',
     MINMEA_GLL_STATUS_DATA_NOT_VALID = 'V',
