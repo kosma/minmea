@@ -12,8 +12,9 @@ link_directories(${CHECK_LIBRARY_DIRS})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -Wextra -Werror -std=c99")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_POSIX_C_SOURCE=199309L -D_BSD_SOURCE -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE")
 
-set(minmea_SRCS minmea.c minmea.h)
+set(minmea_SRCS minmea.c)
 add_library(minmea ${minmea_SRCS})
+target_include_directories(minmea PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_executable(example example.c)
 target_link_libraries(example minmea)
