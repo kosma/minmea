@@ -146,6 +146,17 @@ make
 make test
 ```
 
+## Building without unit tests
+
+It's possible to build the library without the unit tests and their dependencies.
+
+```console
+mkdir build
+cd build
+cmake -DMINMEA_ENABLE_TESTING=OFF ..
+make
+```
+
 ## Limitations
 
 * Only a handful of frames is supported right now.
