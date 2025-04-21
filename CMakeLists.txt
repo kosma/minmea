@@ -1,16 +1,8 @@
 cmake_minimum_required(VERSION 3.3)
 
-option(MINMEA_ENABLE_TESTING "Enable building and running unit tests" ON)
-
 project(minmea)
 
-if (MINMEA_ENABLE_TESTING)
-    enable_testing()
-    find_package(Threads REQUIRED) # Workaround for https://github.com/libcheck/check/issues/48#issuecomment-322965461
-    find_package(PkgConfig)
-    pkg_check_modules(CHECK REQUIRED check)
-    link_directories(${CHECK_LIBRARY_DIRS})
-endif()
+option(MINMEA_ENABLE_TESTING "Enable building and running unit tests" ON)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -Wextra -Werror -std=c99")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_POSIX_C_SOURCE=199309L -D_BSD_SOURCE -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE")
@@ -22,6 +14,12 @@ add_executable(example example.c)
 target_link_libraries(example minmea)
 
 if (MINMEA_ENABLE_TESTING)
+    enable_testing()
+    find_package(Threads REQUIRED) # Workaround for https://github.com/libcheck/check/issues/48#issuecomment-322965461
+    find_package(PkgConfig)
+    pkg_check_modules(CHECK REQUIRED check)
+    link_directories(${CHECK_LIBRARY_DIRS})
+
     add_executable(tests tests.c)
     target_link_libraries(tests minmea ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
     target_include_directories(tests PUBLIC ${CHECK_INCLUDE_DIRS})
