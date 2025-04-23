@@ -26,18 +26,12 @@ if (MINMEA_ENABLE_TESTING)
     target_compile_options(tests PUBLIC ${CHECK_CFLAGS_OTHER})
 
     add_test(NAME tests COMMAND $<TARGET_FILE:tests>)
+    add_test(
+        NAME clang_static_analysis
+        COMMAND scan-build make
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
     list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
-
-    find_program(SCAN_FOUND scan-build)
-    if (SCAN_FOUND)
-        add_test(
-            NAME clang_static_analysis
-            COMMAND scan-build make
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        )
-    else()
-        MESSAGE(STATUS "scan-build not found, not scanning code")
-    endif()
 endif()
 
 include(GNUInstallDirs)
