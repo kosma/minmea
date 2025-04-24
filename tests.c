@@ -236,6 +236,23 @@ START_TEST(test_minmea_scan_f)
 }
 END_TEST
 
+
+START_TEST(test_minmea_scan_F)
+{
+    struct minmea_double f;
+
+    ck_assert(minmea_scan("9223372036854775807", "F", &f) == true);
+    ck_assert_int_eq((int64_t) f.value, 9223372036854775807LL);
+    ck_assert_int_eq(f.scale, 1);
+    /* doesn't fit, truncate precision */
+    ck_assert(minmea_scan("9223372036854775.808", "F", &f) == true);
+    ck_assert_int_eq((int64_t) f.value, 922337203685477580LL);
+    ck_assert_int_eq(f.scale, 100);
+    /* doesn't fit, bail out */
+    ck_assert(minmea_scan("9223372036854775808", "F", &f) == false);
+}
+END_TEST
+
 START_TEST(test_minmea_scan_i)
 {
     int value, extra;
@@ -560,8 +577,8 @@ START_TEST(test_minmea_parse_gga1)
     struct minmea_sentence_gga frame = {};
     struct minmea_sentence_gga expected = {};
     expected.time = (struct minmea_time) { 12, 35, 19, 0 };
-    expected.latitude = (struct minmea_float) { 4807038, 1000 };
-    expected.longitude = (struct minmea_float) { 1131000, 1000 };
+    expected.latitude = (struct minmea_double) { 4807038, 1000 };
+    expected.longitude = (struct minmea_double) { 1131000, 1000 };
     expected.fix_quality = 1;
     expected.satellites_tracked = 8;
     expected.hdop = (struct minmea_float) { 9, 10 };
@@ -628,8 +645,8 @@ START_TEST(test_minmea_parse_gll1)
     memset(&frame, 0, sizeof(frame));
     memset(&expected, 0, sizeof(expected));
 
-    expected.latitude = (struct minmea_float){ 37232475, 10000 };
-    expected.longitude = (struct minmea_float){ -121583416, 10000 };
+    expected.latitude = (struct minmea_double){ 37232475, 10000 };
+    expected.longitude = (struct minmea_double){ -121583416, 10000 };
     expected.time = (struct minmea_time){ 16, 12, 29, 487000 };
     expected.status = MINMEA_GLL_STATUS_DATA_VALID;
     expected.mode = MINMEA_FAA_MODE_AUTONOMOUS;
@@ -1123,12 +1140,23 @@ START_TEST(test_minmea_float)
 }
 END_TEST
 
+#define assert_double_eq(x, y) ck_assert(fabs((x) - (y)) <= 0.0)
+
+START_TEST(test_minmea_double)
+{
+    ck_assert(isnan(minmea_todouble(&(struct minmea_double) { 42, 0 })));
+    assert_double_eq(minmea_todouble(&(struct minmea_double) { 7, 1 }), 7.0);
+    assert_double_eq(minmea_todouble(&(struct minmea_double) { -200, 100 }), -2.0);
+    assert_double_eq(minmea_todouble(&(struct minmea_double) { 15, 10 }), 1.5);
+}
+END_TEST
+
 START_TEST(test_minmea_coord)
 {
-    ck_assert(isnan(minmea_tocoord(&(struct minmea_float) { 42, 0 })));
-    assert_float_eq(minmea_tocoord(&(struct minmea_float) { 4200, 1 }), 42.0f);
-    assert_float_eq(minmea_tocoord(&(struct minmea_float) { 420000, 100 }), 42.0f);
-    assert_float_eq(minmea_tocoord(&(struct minmea_float) { 423000, 100 }), 42.5f);
+    ck_assert(isnan(minmea_tocoord(&(struct minmea_double) { 42, 0 })));
+    assert_double_eq(minmea_tocoord(&(struct minmea_double) { 4200, 1 }), 42.0);
+    assert_double_eq(minmea_tocoord(&(struct minmea_double) { 420000, 100 }), 42.0);
+    assert_double_eq(minmea_tocoord(&(struct minmea_double) { 423000, 100 }), 42.5);
 }
 END_TEST
 
@@ -1148,6 +1176,7 @@ static Suite *minmea_suite(void)
     tcase_add_test(tc_scan, test_minmea_scan_c);
     tcase_add_test(tc_scan, test_minmea_scan_d);
     tcase_add_test(tc_scan, test_minmea_scan_f);
+    tcase_add_test(tc_scan, test_minmea_scan_F);
     tcase_add_test(tc_scan, test_minmea_scan_i);
     tcase_add_test(tc_scan, test_minmea_scan_s);
     tcase_add_test(tc_scan, test_minmea_scan_t);
@@ -1187,6 +1216,7 @@ static Suite *minmea_suite(void)
     tcase_add_test(tc_utils, test_minmea_gettime);
     tcase_add_test(tc_utils, test_minmea_rescale);
     tcase_add_test(tc_utils, test_minmea_float);
+    tcase_add_test(tc_utils, test_minmea_double);
     tcase_add_test(tc_utils, test_minmea_coord);
     suite_add_tcase(s, tc_utils);
 
