@@ -377,7 +377,7 @@ START_TEST(test_minmea_scan_complex1)
     ck_assert_int_eq(longitude.value, 1131000);
     ck_assert_int_eq(longitude.scale, 1000);
     ck_assert_int_eq(longitude_direction, 1);
-    ck_assert_int_eq(fix_quality, 1);
+    ck_assert_int_eq(fix_quality, MINMEA_GGA_FIX_QUALITY_GPS);
     ck_assert_int_eq(satellites, 8);
     ck_assert_int_eq(hdop.value, 9);
     ck_assert_int_eq(hdop.scale, 10);
@@ -562,7 +562,7 @@ START_TEST(test_minmea_parse_gga1)
     expected.time = (struct minmea_time) { 12, 35, 19, 0 };
     expected.latitude = (struct minmea_float) { 4807038, 1000 };
     expected.longitude = (struct minmea_float) { 1131000, 1000 };
-    expected.fix_quality = 1;
+    expected.fix_quality = MINMEA_GGA_FIX_QUALITY_GPS;
     expected.satellites_tracked = 8;
     expected.hdop = (struct minmea_float) { 9, 10 };
     expected.altitude = (struct minmea_float) { 5454, 10 };
