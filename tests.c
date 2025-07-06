@@ -292,7 +292,7 @@ START_TEST(test_minmea_scan_t)
     ck_assert(minmea_scan("GPRMC,foo,bar,baz", "t", type) == false);
     ck_assert(minmea_scan("$GPRMC,foo,bar,baz", "t", &type) == true);
     ck_assert(memcmp(type.talker_id, "GP", sizeof(type.talker_id)) == 0);
-    ck_assert(memcmp(type.sentacne_id, "RMC", sizeof(type.sentacne_id)) == 0);
+    ck_assert(memcmp(type.sentence_id, "RMC", sizeof(type.sentence_id)) == 0);
 }
 END_TEST
 
@@ -365,7 +365,7 @@ START_TEST(test_minmea_scan_complex1)
         &altitude, &altitude_units,
         &height, &height_units) == true);
     ck_assert(memcmp(type.talker_id, "GP", sizeof(type.talker_id)) == 0);
-    ck_assert(memcmp(type.sentacne_id, "GGA", sizeof(type.sentacne_id)) == 0);
+    ck_assert(memcmp(type.sentence_id, "GGA", sizeof(type.sentence_id)) == 0);
     ck_assert_int_eq(t.hours, 12);
     ck_assert_int_eq(t.minutes, 35);
     ck_assert_int_eq(t.seconds, 19);
@@ -410,7 +410,7 @@ START_TEST(test_minmea_scan_complex2)
         &distance, &distance_units,
         name) == true);
     ck_assert(memcmp(type.talker_id, "GP", sizeof(type.talker_id)) == 0);
-    ck_assert(memcmp(type.sentacne_id, "BWC", sizeof(type.sentacne_id)) == 0);
+    ck_assert(memcmp(type.sentence_id, "BWC", sizeof(type.sentence_id)) == 0);
     ck_assert_int_eq(t.hours, 8);
     ck_assert_int_eq(t.minutes, 18);
     ck_assert_int_eq(t.seconds, 37);
@@ -451,7 +451,7 @@ START_TEST(test_minmea_scan_complex3)
         &longitude_error_deviation,
         &altitude_error_deviation) == true);
     ck_assert(memcmp(type.talker_id, "GP", sizeof(type.talker_id)) == 0);
-    ck_assert(memcmp(type.sentacne_id, "GST", sizeof(type.sentacne_id)) == 0);
+    ck_assert(memcmp(type.sentence_id, "GST", sizeof(type.sentence_id)) == 0);
     ck_assert_int_eq(t.hours, 2);
     ck_assert_int_eq(t.minutes, 46);
     ck_assert_int_eq(t.seconds, 3);

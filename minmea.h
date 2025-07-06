@@ -60,7 +60,7 @@ struct minmea_time {
 
 struct minmea_type {
     char talker_id[2];
-    char sentacne_id[3];
+    char sentence_id[3];
 };
 
 struct minmea_sentence_gbs {
