@@ -23,6 +23,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     // Call the target function
     bool result = minmea_parse_rmc(&frame, sentence);
+    (void)result;
 
     return 0;
 }
