@@ -242,7 +242,7 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                 // This field is always mandatory.
                 if (!field)
                     goto parse_error;
-                        
+
                 if (field[0] != '$')
                     goto parse_error;
                 for (int f=0; f<5; f++)
@@ -352,27 +352,27 @@ enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict)
     if (!minmea_check(sentence, strict))
         return MINMEA_INVALID;
 
-    char type[6];
-    if (!minmea_scan(sentence, "t", type))
+    struct minmea_type type;
+    if (!minmea_scan(sentence, "t", &type))
         return MINMEA_INVALID;
 
-    if (!strcmp(type+2, "GBS"))
+    if (!memcmp(type.sentence_id, "GBS", sizeof(type.sentence_id)))
         return MINMEA_SENTENCE_GBS;
-    if (!strcmp(type+2, "GGA"))
+    if (!memcmp(type.sentence_id, "GGA", sizeof(type.sentence_id)))
         return MINMEA_SENTENCE_GGA;
-    if (!strcmp(type+2, "GLL"))
+    if (!memcmp(type.sentence_id, "GLL", sizeof(type.sentence_id)))
         return MINMEA_SENTENCE_GLL;
-    if (!strcmp(type+2, "GSA"))
+    if (!memcmp(type.sentence_id, "GSA", sizeof(type.sentence_id)))
         return MINMEA_SENTENCE_GSA;
-    if (!strcmp(type+2, "GST"))
+    if (!memcmp(type.sentence_id, "GST", sizeof(type.sentence_id)))
         return MINMEA_SENTENCE_GST;
-    if (!strcmp(type+2, "GSV"))
+    if (!memcmp(type.sentence_id, "GSV", sizeof(type.sentence_id)))
         return MINMEA_SENTENCE_GSV;
-    if (!strcmp(type+2, "RMC"))
+    if (!memcmp(type.sentence_id, "RMC", sizeof(type.sentence_id)))
         return MINMEA_SENTENCE_RMC;
-    if (!strcmp(type+2, "VTG"))
+    if (!memcmp(type.sentence_id, "VTG", sizeof(type.sentence_id)))
         return MINMEA_SENTENCE_VTG;
-    if (!strcmp(type+2, "ZDA"))
+    if (!memcmp(type.sentence_id, "ZDA", sizeof(type.sentence_id)))
         return MINMEA_SENTENCE_ZDA;
 
     return MINMEA_UNKNOWN;
