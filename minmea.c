@@ -238,7 +238,7 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                 *buf = '\0';
             } break;
 
-            case 't': { // NMEA talker identifier (struct minmea_talker_id *).
+            case 't': { // NMEA talker identifier and type (union minmea_type *).
                 // This field is always mandatory.
                 if (!field)
                     goto parse_error;
@@ -249,8 +249,9 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                     if (!minmea_isfield(field[1+f]))
                         goto parse_error;
 
-                struct minmea_type *buf = va_arg(ap, struct minmea_type *);
-                memcpy(buf, field+1, sizeof(*buf));
+                union minmea_type *buf = va_arg(ap, union minmea_type *);
+                memcpy(buf, field+1, (sizeof(*buf) - sizeof(buf->null_terminator)));
+                buf->null_terminator = '\0';
             } break;
 
             case 'D': { // Date (int, int, int), -1 if empty.
@@ -336,12 +337,12 @@ parse_error:
 
 bool minmea_talker_id(char talker[3], const char *sentence)
 {
-    char type[6];
-    if (!minmea_scan(sentence, "t", type))
+    union minmea_type type;
+    if (!minmea_scan(sentence, "t", &type))
         return false;
 
-    talker[0] = type[0];
-    talker[1] = type[1];
+    talker[0] = type.talker_id[0];
+    talker[1] = type.talker_id[1];
     talker[2] = '\0';
 
     return true;
@@ -352,7 +353,7 @@ enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict)
     if (!minmea_check(sentence, strict))
         return MINMEA_INVALID;
 
-    struct minmea_type type;
+    union minmea_type type;
     if (!minmea_scan(sentence, "t", &type))
         return MINMEA_INVALID;
 
