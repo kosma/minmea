@@ -58,6 +58,8 @@ struct minmea_time {
     int microseconds;
 };
 
+// provide backwards compatibility to users expecting a null-terminated string
+// instead of a struct
 union minmea_type {
   char buf[6];
   struct {
