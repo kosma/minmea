@@ -78,11 +78,11 @@ int main(void)
                     printf(INDENT_SPACES "$xxGSV: message %d of %d\n", frame.msg_nr, frame.total_msgs);
                     printf(INDENT_SPACES "$xxGSV: satellites in view: %d\n", frame.total_sats);
                     for (int i = 0; i < 4; i++)
-                        printf(INDENT_SPACES "$xxGSV: sat nr %d, elevation: %d, azimuth: %d, snr: %d dbm\n",
+                        printf(INDENT_SPACES "$xxGSV: sat nr %d, elevation: %d, azimuth: %d, snr: %f dbm\n",
                             frame.sats[i].nr,
                             frame.sats[i].elevation,
                             frame.sats[i].azimuth,
-                            frame.sats[i].snr);
+                            minmea_tofloat(&frame.sats[i].snr));
                 }
                 else {
                     printf(INDENT_SPACES "$xxGSV sentence is not parsed\n");
