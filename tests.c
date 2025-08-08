@@ -42,6 +42,7 @@ static const char *valid_sentences_checksum[] = {
     "$GPGSV,4,2,13,08,51,203,30,09,45,215,28,10,69,197,19,13,47,081,*76",
     "$GPGSV,4,3,13,16,20,040,17,26,08,271,30,28,01,168,18,33,24,219,27*74",
     "$GPGSV,4,4,13,39,31,170,27*40",
+    "$GPGSV,3,1,11,09,57,333,29.0,07,54,227,,04,49,043,24.5,03,43,129,,1*67",
     "$GPGLL,5106.94086,N,01701.51680,E,123204.00,A,A*63",
     "$GPRMC,123205.00,A,5106.94085,N,01701.51689,E,0.016,,280214,,,A*7B",
     "$GPVTG,,T,,M,0.016,N,0.030,K,A*27",
@@ -684,25 +685,25 @@ START_TEST(test_minmea_parse_gsv1)
                 .nr = 22,
                 .elevation = 42,
                 .azimuth = 67,
-                .snr = 42
+                .snr = {42, 1}
             },
             {
                 .nr = 24,
                 .elevation = 14,
                 .azimuth = 311,
-                .snr = 43
+                .snr = {43, 1}
             },
             {
                 .nr = 27,
                 .elevation = 5,
                 .azimuth = 244,
-                .snr = 0
+                .snr = {0, 1}
             },
             {
                 .nr = 0,
                 .elevation = 0,
                 .azimuth = 0,
-                .snr = 0
+                .snr = {0, 0}
             }
         }
     };
@@ -727,25 +728,25 @@ START_TEST(test_minmea_parse_gsv2)
                 .nr = 8,
                 .elevation = 51,
                 .azimuth = 203,
-                .snr = 30
+                .snr = {30, 1}
             },
             {
                 .nr = 9,
                 .elevation = 45,
                 .azimuth = 215,
-                .snr = 28
+                .snr = {28, 1}
             },
             {
                 .nr = 0,
                 .elevation = 0,
                 .azimuth = 0,
-                .snr = 0
+                .snr = {0, 0}
             },
             {
                 .nr = 0,
                 .elevation = 0,
                 .azimuth = 0,
-                .snr = 0
+                .snr = {0, 0}
             }
         }
     };
@@ -770,25 +771,25 @@ START_TEST(test_minmea_parse_gsv3)
                 .nr = 39,
                 .elevation = 31,
                 .azimuth = 170,
-                .snr = 27
+                .snr = {27, 1}
             },
             {
                 .nr = 0,
                 .elevation = 0,
                 .azimuth = 0,
-                .snr = 0
+                .snr = {0, 0}
             },
             {
                 .nr = 0,
                 .elevation = 0,
                 .azimuth = 0,
-                .snr = 0
+                .snr = {0, 0}
             },
             {
                 .nr = 0,
                 .elevation = 0,
                 .azimuth = 0,
-                .snr = 0
+                .snr = {0, 0}
             }
         }
     };
@@ -813,25 +814,25 @@ START_TEST(test_minmea_parse_gsv4)
                 .nr = 0,
                 .elevation = 0,
                 .azimuth = 0,
-                .snr = 0
+                .snr = {0, 0}
             },
             {
                 .nr = 0,
                 .elevation = 0,
                 .azimuth = 0,
-                .snr = 0
+                .snr = {0, 0}
             },
             {
                 .nr = 0,
                 .elevation = 0,
                 .azimuth = 0,
-                .snr = 0
+                .snr = {0, 0}
             },
             {
                 .nr = 0,
                 .elevation = 0,
                 .azimuth = 0,
-                .snr = 0
+                .snr = {0, 0}
             }
         }
     };
@@ -856,25 +857,25 @@ START_TEST(test_minmea_parse_gsv5)
                 .nr = 2,
                 .elevation = 28,
                 .azimuth = 259,
-                .snr = 33
+                .snr = {33, 1}
             },
             {
                 .nr = 4,
                 .elevation = 12,
                 .azimuth = 212,
-                .snr = 27
+                .snr = {27, 1}
             },
             {
                 .nr = 5,
                 .elevation = 34,
                 .azimuth = 305,
-                .snr = 30
+                .snr = {30, 1}
             },
             {
                 .nr = 7,
                 .elevation = 79,
                 .azimuth = 138,
-                .snr = 0
+                .snr = {0, 0}
             }
         }
     };
@@ -885,6 +886,48 @@ START_TEST(test_minmea_parse_gsv5)
 }
 END_TEST
 
+START_TEST(test_minmea_parse_gsv6)
+{
+    const char *sentence = "$GPGSV,3,1,11,09,57,333,29.0,07,54,227,,04,49,043,24.5,03,43,129,,1*67";
+    struct minmea_sentence_gsv frame = {};
+    static const struct minmea_sentence_gsv expected = {
+        .type = {"GP", "GSV"},
+        .total_msgs = 3,
+        .msg_nr = 1,
+        .total_sats = 11,
+        .sats = {
+            {
+                .nr = 9,
+                .elevation = 57,
+                .azimuth = 333,
+                .snr = {290, 10}
+            },
+            {
+                .nr = 7,
+                .elevation = 54,
+                .azimuth = 227,
+                .snr = {0, 0}
+            },
+            {
+                .nr = 4,
+                .elevation = 49,
+                .azimuth = 43,
+                .snr = {245, 10}
+            },
+            {
+                .nr = 3,
+                .elevation = 43,
+                .azimuth = 129,
+                .snr = {0, 0}
+            }
+        }
+    };
+    ck_assert(minmea_check(sentence, false) == true);
+    ck_assert(minmea_check(sentence, true) == true);
+    ck_assert(minmea_parse_gsv(&frame, sentence) == true);
+    ck_assert(!memcmp(&frame, &expected, sizeof(frame)));
+}
+END_TEST
 
 START_TEST(test_minmea_parse_vtg1)
 {
@@ -1192,6 +1235,7 @@ static Suite *minmea_suite(void)
     tcase_add_test(tc_parse, test_minmea_parse_gsv3);
     tcase_add_test(tc_parse, test_minmea_parse_gsv4);
     tcase_add_test(tc_parse, test_minmea_parse_gsv5);
+    tcase_add_test(tc_parse, test_minmea_parse_gsv6);
     tcase_add_test(tc_parse, test_minmea_parse_vtg1);
     tcase_add_test(tc_parse, test_minmea_parse_vtg2);
     tcase_add_test(tc_parse, test_minmea_parse_vtg3);

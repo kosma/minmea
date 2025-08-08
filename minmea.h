@@ -162,7 +162,7 @@ struct minmea_sat_info {
     int nr;
     int elevation;
     int azimuth;
-    int snr;
+    struct minmea_float snr;
 };
 
 struct minmea_sentence_gsv {
