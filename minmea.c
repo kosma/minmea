@@ -352,7 +352,7 @@ enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict)
     if (!minmea_check(sentence, strict))
         return MINMEA_INVALID;
 
-    char type[6];
+    char type[6] = { 0, 0, 0, 0, 0, 0 };
     if (!minmea_scan(sentence, "t", type))
         return MINMEA_INVALID;
 
