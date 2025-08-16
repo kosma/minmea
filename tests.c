@@ -286,7 +286,7 @@ END_TEST
 
 START_TEST(test_minmea_scan_t)
 {
-    struct minmea_type type;
+    union minmea_type type;
 
     ck_assert(minmea_scan("$GPRM,foo,bar,baz", "t", type) == false);
     ck_assert(minmea_scan("GPRMC,foo,bar,baz", "t", type) == false);
@@ -356,7 +356,7 @@ END_TEST
 START_TEST(test_minmea_scan_complex1)
 {
     const char *sentence = "$GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47\r\n";
-    struct minmea_type type;
+    union minmea_type type;
     struct minmea_time t;
     struct minmea_float latitude; int latitude_direction;
     struct minmea_float longitude; int longitude_direction;
@@ -403,7 +403,7 @@ END_TEST
 START_TEST(test_minmea_scan_complex2)
 {
     const char *sentence = "$GPBWC,081837,,,,,,T,,M,,N,*13";
-    struct minmea_type type;
+    union minmea_type type;
     struct minmea_time t;
     struct minmea_float latitude; int latitude_direction;
     struct minmea_float longitude; int longitude_direction;
@@ -442,7 +442,7 @@ END_TEST
 START_TEST(test_minmea_scan_complex3)
 {
     const char *sentence = "$GPGST,024603.00,3.2,6.6,4.7,47.3,5.8,5.6,22.0*58";
-    struct minmea_type type;
+    union minmea_type type;
     struct minmea_time t;
     struct minmea_float rms_deviation;
     struct minmea_float semi_major_deviation;
@@ -489,7 +489,7 @@ START_TEST(test_minmea_parse_gbs1)
     const char *sentence = "$GNGBS,170556.00,3.0,2.9,8.3,,,,";
     struct minmea_sentence_gbs frame = {};
     static const struct minmea_sentence_gbs expected = {
-        .type = {"GN", "GBS"},
+        .type = { .talker_id = "GN", .sentence_id = "GBS", .null_terminator = '\0' },
 	    .time = { 17, 5, 56, 0 },
 	    .err_latitude = { 30, 10 },
 	    .err_longitude = { 29, 10 },
@@ -511,7 +511,7 @@ START_TEST(test_minmea_parse_gbs2)
     const char *sentence = "$GPGBS,015509.00,-0.031,-0.186,0.219,19,0.000,-0.354,6.972*4D";
     struct minmea_sentence_gbs frame = {};
     static const struct minmea_sentence_gbs expected = {
-        .type = {"GP", "GBS"},
+        .type = { .talker_id = "GP", .sentence_id = "GBS", .null_terminator = '\0' },
         .time = { 1, 55, 9 },
         .err_latitude = { -31, 1000 },
         .err_longitude = { -186, 1000 },
@@ -533,7 +533,7 @@ START_TEST(test_minmea_parse_rmc1)
     const char *sentence = "$GPRMC,081836.75,A,3751.65,S,14507.36,E,000.0,360.0,130998,011.3,E";
     struct minmea_sentence_rmc frame = {};
     static const struct minmea_sentence_rmc expected = {
-        .type = {"GP", "RMC"},
+        .type = { .talker_id = "GP", .sentence_id = "RMC", .null_terminator = '\0' },
         .time = { 8, 18, 36, 750000 },
         .valid = true,
         .latitude = { -375165, 100 },
@@ -555,7 +555,7 @@ START_TEST(test_minmea_parse_rmc2)
     const char *sentence = "$GPRMC,,A,3751.65,N,14507.36,W,,,,,";
     struct minmea_sentence_rmc frame = {};
     static const struct minmea_sentence_rmc expected = {
-        .type = {"GP", "RMC"},
+        .type = { .talker_id = "GP", .sentence_id = "RMC", .null_terminator = '\0' },
         .time = { -1, -1, -1, -1 },
         .valid = true,
         .latitude = { 375165, 100 },
@@ -574,7 +574,7 @@ START_TEST(test_minmea_parse_gga1)
     const char *sentence = "$GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47";
     struct minmea_sentence_gga frame = {};
     struct minmea_sentence_gga expected = {};
-    expected.type = (struct minmea_type){"GP", "GGA"};
+    expected.type = (union minmea_type){ .talker_id = "GP", .sentence_id = "GGA", .null_terminator = '\0' };
     expected.time = (struct minmea_time) { 12, 35, 19, 0 };
     expected.latitude = (struct minmea_float) { 4807038, 1000 };
     expected.longitude = (struct minmea_float) { 1131000, 1000 };
@@ -599,7 +599,7 @@ START_TEST(test_minmea_parse_gst1)
     const char *sentence = "$GPGST,024603.00,3.2,6.6,4.7,47.3,5.8,5.6,22.0*58";
     struct minmea_sentence_gst frame = {};
     struct minmea_sentence_gst expected = {};
-    expected.type = (struct minmea_type){"GP", "GST"};
+    expected.type = (union minmea_type){ .talker_id = "GP", .sentence_id = "GST", .null_terminator = '\0' };
     expected.time = (struct minmea_time){ 2, 46, 3, 0 };
     expected.rms_deviation = (struct minmea_float){ 32, 10 };
     expected.semi_major_deviation = (struct minmea_float){ 66, 10 };
@@ -621,7 +621,7 @@ START_TEST(test_minmea_parse_gsa1)
     const char *sentence = "$GPGSA,A,3,04,05,,09,12,,,24,,,,,2.5,1.3,2.1*39";
     struct minmea_sentence_gsa frame = {};
     static const struct minmea_sentence_gsa expected = {
-        .type = {"GP", "GSA"},
+        .type = { .talker_id = "GP", .sentence_id = "GSA", .null_terminator = '\0' },
         .mode = MINMEA_GPGSA_MODE_AUTO,
         .fix_type = MINMEA_GPGSA_FIX_3D,
         .sats = { 4, 5, 0, 9, 12, 0, 0, 24, 0, 0, 0, 0 },
@@ -647,7 +647,7 @@ START_TEST(test_minmea_parse_gll1)
     memset(&frame, 0, sizeof(frame));
     memset(&expected, 0, sizeof(expected));
 
-    expected.type = (struct minmea_type){"GP", "GLL"};
+    expected.type = (union minmea_type){ .talker_id = "GP", .sentence_id = "GLL", .null_terminator = '\0' };
     expected.latitude = (struct minmea_float){ 37232475, 10000 };
     expected.longitude = (struct minmea_float){ -121583416, 10000 };
     expected.time = (struct minmea_time){ 16, 12, 29, 487000 };
@@ -666,7 +666,7 @@ START_TEST(test_minmea_parse_gll2)
     const char *sentence = "$GPGLL,4916.45,N,12311.12,W,225444,A";
     struct minmea_sentence_gll frame = {};
     struct minmea_sentence_gll expected = {
-        .type = {"GP", "GLL"},
+        .type = { .talker_id = "GP", .sentence_id = "GLL", .null_terminator = '\0' },
         .latitude = { 491645, 100 },
         .longitude = { -1231112, 100 },
         .time = { 22, 54, 44 },
@@ -686,7 +686,7 @@ START_TEST(test_minmea_parse_gsv1)
     const char *sentence = "$GPGSV,3,3,11,22,42,067,42,24,14,311,43,27,05,244,00,,,,*4D";
     struct minmea_sentence_gsv frame = {};
     static const struct minmea_sentence_gsv expected = {
-        .type = {"GP", "GSV"},
+        .type = { .talker_id = "GP", .sentence_id = "GSV", .null_terminator = '\0' },
         .total_msgs = 3,
         .msg_nr = 3,
         .total_sats = 11,
@@ -729,7 +729,7 @@ START_TEST(test_minmea_parse_gsv2)
     const char *sentence = "$GPGSV,4,2,11,08,51,203,30,09,45,215,28*75";
     struct minmea_sentence_gsv frame = {};
     static const struct minmea_sentence_gsv expected = {
-        .type = {"GP", "GSV"},
+        .type = { .talker_id = "GP", .sentence_id = "GSV", .null_terminator = '\0' },
         .total_msgs = 4,
         .msg_nr = 2,
         .total_sats = 11,
@@ -772,7 +772,7 @@ START_TEST(test_minmea_parse_gsv3)
     const char *sentence = "$GPGSV,4,4,13,39,31,170,27*40";
     struct minmea_sentence_gsv frame = {};
     static const struct minmea_sentence_gsv expected = {
-        .type = {"GP", "GSV"},
+        .type = { .talker_id = "GP", .sentence_id = "GSV", .null_terminator = '\0' },
         .total_msgs = 4,
         .msg_nr = 4,
         .total_sats = 13,
@@ -815,7 +815,7 @@ START_TEST(test_minmea_parse_gsv4)
     const char *sentence = "$GPGSV,4,4,13*7B";
     struct minmea_sentence_gsv frame = {};
     static const struct minmea_sentence_gsv expected = {
-        .type = {"GP", "GSV"},
+        .type = { .talker_id = "GP", .sentence_id = "GSV", .null_terminator = '\0' },
         .total_msgs = 4,
         .msg_nr = 4,
         .total_sats = 13,
@@ -858,7 +858,7 @@ START_TEST(test_minmea_parse_gsv5)
     const char *sentence = "$GPGSV,4,1,13,02,28,259,33,04,12,212,27,05,34,305,30,07,79,138,*7F";
     struct minmea_sentence_gsv frame = {};
     static const struct minmea_sentence_gsv expected = {
-        .type = {"GP", "GSV"},
+        .type = { .talker_id = "GP", .sentence_id = "GSV", .null_terminator = '\0' },
         .total_msgs = 4,
         .msg_nr = 1,
         .total_sats = 13,
@@ -905,7 +905,7 @@ START_TEST(test_minmea_parse_vtg1)
     struct minmea_sentence_vtg expected = {};
 
     expected = (struct minmea_sentence_vtg){
-        .type = {"GP", "VTG"},
+        .type = { .talker_id = "GP", .sentence_id = "VTG", .null_terminator = '\0' },
         .true_track_degrees = { 547, 10 },
         .magnetic_track_degrees = { 344, 10 },
         .speed_knots = { 55, 10 },
@@ -928,7 +928,7 @@ START_TEST(test_minmea_parse_vtg2)
     struct minmea_sentence_vtg expected = {};
 
     expected = (struct minmea_sentence_vtg){
-        .type = {"GP", "VTG"},
+        .type = { .talker_id = "GP", .sentence_id = "VTG", .null_terminator = '\0' },
         .true_track_degrees = { 18836, 100 },
         .magnetic_track_degrees = { 0, 0 },
         .speed_knots = { 820, 1000 },
@@ -951,7 +951,7 @@ START_TEST(test_minmea_parse_vtg3)
     struct minmea_sentence_vtg frame = {};
     struct minmea_sentence_vtg expected = {};
     expected = (struct minmea_sentence_vtg){
-        .type = {"GN", "VTG"},
+        .type = { .talker_id = "GN", .sentence_id = "VTG", .null_terminator = '\0' },
         .true_track_degrees = { 0, 0 },
         .magnetic_track_degrees = { 0, 0 },
         .speed_knots = { 0, 0 },
@@ -972,7 +972,7 @@ START_TEST(test_minmea_parse_zda1)
     struct minmea_sentence_zda expected = {};
 
     expected = (struct minmea_sentence_zda) {
-        .type = {"GP", "ZDA"},
+        .type = { .talker_id = "GP", .sentence_id = "ZDA", .null_terminator = '\0' },
         .time = { 16, 0, 12, 710000 },
         .date = { 11, 3, 2004 },
         .hour_offset = -1,
