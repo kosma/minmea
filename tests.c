@@ -296,6 +296,17 @@ START_TEST(test_minmea_scan_t)
 }
 END_TEST
 
+START_TEST(test_minmea_scan_t_str)
+{
+    //"type" used to be a string and legacy code may still rely on that. See
+    //for example, minmea_sentence_id(). Test that assumption remains valid here.
+    //Seed array with non-null bytes to ensure all is correctly populated.
+    char type[] = { 'X', 'X', 'X', 'X', 'X', 'X' };
+    ck_assert(minmea_scan("$GPRMC,foo,bar,baz", "t", &type) == true);
+    ck_assert(strcmp(type, "GPRMC") == 0);
+}
+END_TEST
+
 START_TEST(test_minmea_scan_D)
 {
     struct minmea_date d;
@@ -1170,6 +1181,7 @@ static Suite *minmea_suite(void)
     tcase_add_test(tc_scan, test_minmea_scan_i);
     tcase_add_test(tc_scan, test_minmea_scan_s);
     tcase_add_test(tc_scan, test_minmea_scan_t);
+    tcase_add_test(tc_scan, test_minmea_scan_t_str);
     tcase_add_test(tc_scan, test_minmea_scan_D);
     tcase_add_test(tc_scan, test_minmea_scan_T);
     tcase_add_test(tc_scan, test_minmea_scan_complex1);
