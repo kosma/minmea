@@ -348,6 +348,31 @@ bool minmea_talker_id(char talker[3], const char *sentence)
     return true;
 }
 
+struct sentence_id_map_entry {
+    const char *str;
+    enum minmea_sentence_id id;
+};
+
+struct sentence_id_map_entry sentence_id_map[] = {
+    { "INVALID", MINMEA_INVALID },
+    { "GBS", MINMEA_SENTENCE_GBS },
+    { "GGA", MINMEA_SENTENCE_GGA },
+    { "GLL", MINMEA_SENTENCE_GLL },
+    { "GSA", MINMEA_SENTENCE_GSA },
+    { "GST", MINMEA_SENTENCE_GST },
+    { "GSV", MINMEA_SENTENCE_GSV },
+    { "RMC", MINMEA_SENTENCE_RMC },
+    { "VTG", MINMEA_SENTENCE_VTG },
+    { "ZDA", MINMEA_SENTENCE_ZDA },
+};
+
+const char* minmea_sentence(enum minmea_sentence_id id) {
+    if (id < 0 || id >= sizeof(sentence_id_map)) {
+        return "UNKNOWN";
+    }
+    return sentence_id_map[id].str;
+}
+
 enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict)
 {
     if (!minmea_check(sentence, strict))
@@ -357,24 +382,11 @@ enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict)
     if (!minmea_scan(sentence, "t", &type))
         return MINMEA_INVALID;
 
-    if (!memcmp(type.sentence_id, "GBS", sizeof(type.sentence_id)))
-        return MINMEA_SENTENCE_GBS;
-    if (!memcmp(type.sentence_id, "GGA", sizeof(type.sentence_id)))
-        return MINMEA_SENTENCE_GGA;
-    if (!memcmp(type.sentence_id, "GLL", sizeof(type.sentence_id)))
-        return MINMEA_SENTENCE_GLL;
-    if (!memcmp(type.sentence_id, "GSA", sizeof(type.sentence_id)))
-        return MINMEA_SENTENCE_GSA;
-    if (!memcmp(type.sentence_id, "GST", sizeof(type.sentence_id)))
-        return MINMEA_SENTENCE_GST;
-    if (!memcmp(type.sentence_id, "GSV", sizeof(type.sentence_id)))
-        return MINMEA_SENTENCE_GSV;
-    if (!memcmp(type.sentence_id, "RMC", sizeof(type.sentence_id)))
-        return MINMEA_SENTENCE_RMC;
-    if (!memcmp(type.sentence_id, "VTG", sizeof(type.sentence_id)))
-        return MINMEA_SENTENCE_VTG;
-    if (!memcmp(type.sentence_id, "ZDA", sizeof(type.sentence_id)))
-        return MINMEA_SENTENCE_ZDA;
+    for (int i = 0; i < sizeof(sentence_id_map) / sizeof(struct sentence_id_map_entry); i++) {
+        if (!memcmp(type.sentence_id, sentence_id_map[i].str, sizeof(type.sentence_id))) {
+            return sentence_id_map[i].id;
+        }
+    }
 
     return MINMEA_UNKNOWN;
 }
