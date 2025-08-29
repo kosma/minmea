@@ -212,6 +212,11 @@ bool minmea_check(const char *sentence, bool strict);
 bool minmea_talker_id(char talker[3], const char *sentence);
 
 /**
+ * Get sentence id as string.
+ */
+const char* minmea_sentence(enum minmea_sentence_id id);
+
+/**
  * Determine sentence identifier.
  */
 enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict);
