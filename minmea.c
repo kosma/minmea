@@ -13,6 +13,7 @@
 #include <stdarg.h>
 
 #define boolstr(s) ((s) ? "true" : "false")
+#define countof(array) (sizeof(array) / sizeof(array[0]))
 
 static int hex2int(char c)
 {
@@ -367,7 +368,7 @@ struct sentence_id_map_entry sentence_id_map[] = {
 };
 
 const char* minmea_sentence(enum minmea_sentence_id id) {
-    if (id < 0 || id >= sizeof(sentence_id_map)) {
+    if (id < 0 || id >= (int)countof(sentence_id_map)) {
         return "UNKNOWN";
     }
     return sentence_id_map[id].str;
@@ -382,7 +383,7 @@ enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict)
     if (!minmea_scan(sentence, "t", &type))
         return MINMEA_INVALID;
 
-    for (int i = 0; i < sizeof(sentence_id_map) / sizeof(struct sentence_id_map_entry); i++) {
+    for (uint i = 0; i < countof(sentence_id_map); i++) {
         if (!memcmp(type.sentence_id, sentence_id_map[i].str, sizeof(type.sentence_id))) {
             return sentence_id_map[i].id;
         }
