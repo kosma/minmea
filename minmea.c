@@ -383,7 +383,7 @@ enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict)
     if (!minmea_scan(sentence, "t", &type))
         return MINMEA_INVALID;
 
-    for (uint i = 0; i < countof(sentence_id_map); i++) {
+    for (unsigned int i = 0; i < countof(sentence_id_map); i++) {
         if (!memcmp(type.sentence_id, sentence_id_map[i].str, sizeof(type.sentence_id))) {
             return sentence_id_map[i].id;
         }
