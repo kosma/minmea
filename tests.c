@@ -902,7 +902,7 @@ START_TEST(test_minmea_parse_gsv6)
     const char *sentence = "$GPGSV,3,1,11,09,57,333,29.0,07,54,227,,04,49,043,24.5,03,43,129,,1*67";
     struct minmea_sentence_gsv frame = {};
     static const struct minmea_sentence_gsv expected = {
-        .type = {"GP", "GSV"},
+        .type = { .talker_id = "GP", .sentence_id = "GSV", .null_terminator = '\0' },
         .total_msgs = 3,
         .msg_nr = 1,
         .total_sats = 11,
