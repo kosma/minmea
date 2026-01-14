@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 #ifndef MINMEA_MAX_SENTENCE_LENGTH
-#define MINMEA_MAX_SENTENCE_LENGTH 80
+#define MINMEA_MAX_SENTENCE_LENGTH 256
 #endif
 
 enum minmea_sentence_id {
