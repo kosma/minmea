@@ -181,6 +181,10 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                                     goto parse_error;
                                 }
                             }
+                            if (scale > (INT_LEAST32_MAX / 10)) {
+                                /* truncate extra precision */
+                                break;
+                            }
                             value = (10 * value) + digit;
                             if (scale)
                                 scale *= 10;
