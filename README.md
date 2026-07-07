@@ -26,6 +26,7 @@ systems.
 * ``GSA`` (DOP and active satellites)
 * ``GST`` (Pseudorange Noise Statistics)
 * ``GSV`` (Satellites in view)
+* ``HDT`` (Heading, True)
 * ``RMC`` (Recommended Minimum: position, velocity, time)
 * ``VTG`` (Track made good and Ground speed)
 * ``ZDA`` (Time & Date - UTC, day, month, year and local time zone)
