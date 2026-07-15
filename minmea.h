@@ -269,6 +269,8 @@ static inline int_least32_t minmea_rescale(const struct minmea_float *f, int_lea
         return 0;
     if (f->scale == new_scale)
         return f->value;
+    if (new_scale == 0)
+        return 0;
     if (f->scale > new_scale)
         return (f->value + ((f->value > 0) - (f->value < 0)) * f->scale/new_scale/2) / (f->scale/new_scale);
     else
