@@ -39,7 +39,7 @@ Minmea runs out-of-the-box under most Unix-compatible systems. Support for non-U
 (including native Windows builds under MSVC) is provided via compatibility headers:
 
 1. Define `MINMEA_INCLUDE_COMPAT` in the build environment.
-2. Add appropriate compatibility header from under `compat/` directory as `minmea_compat.h`.
+2. Add appropriate compatibility header from under `compat/` directory.
 
 If your GPS receiver outputs very long sentences, consider increasing `MINMEA_MAX_SENTENCE_LENGTH`
 in your build environment.
