@@ -285,6 +285,23 @@ START_TEST(test_minmea_scan_s)
 }
 END_TEST
 
+START_TEST(test_minmea_scan_s_overflow)
+{
+    /* Oversized field must be truncated, not overflow the destination. */
+    char oversized[MINMEA_MAX_SENTENCE_LENGTH * 2];
+    memset(oversized, 'A', sizeof(oversized) - 1);
+    oversized[sizeof(oversized) - 1] = '\0';
+
+    char value[MINMEA_MAX_SENTENCE_LENGTH];
+    memset(value, 0, sizeof(value));
+
+    ck_assert(minmea_scan(oversized, "s", value) == true);
+    ck_assert_int_eq((int)strlen(value), MINMEA_MAX_SENTENCE_LENGTH - 1);
+    for (int i = 0; i < MINMEA_MAX_SENTENCE_LENGTH - 1; i++)
+        ck_assert_int_eq(value[i], 'A');
+}
+END_TEST
+
 START_TEST(test_minmea_scan_t)
 {
     union minmea_type type;
@@ -1223,6 +1240,7 @@ static Suite *minmea_suite(void)
     tcase_add_test(tc_scan, test_minmea_scan_f);
     tcase_add_test(tc_scan, test_minmea_scan_i);
     tcase_add_test(tc_scan, test_minmea_scan_s);
+    tcase_add_test(tc_scan, test_minmea_scan_s_overflow);
     tcase_add_test(tc_scan, test_minmea_scan_t);
     tcase_add_test(tc_scan, test_minmea_scan_t_str);
     tcase_add_test(tc_scan, test_minmea_scan_D);

@@ -230,10 +230,13 @@ bool minmea_scan(const char *sentence, const char *format, ...)
 
             case 's': { // String value (char *).
                 char *buf = va_arg(ap, char *);
+                int len = 0;
 
                 if (field) {
-                    while (minmea_isfield(*field))
+                    while (minmea_isfield(*field) && len < MINMEA_MAX_SENTENCE_LENGTH - 1) {
                         *buf++ = *field++;
+                        len++;
+                    }
                 }
 
                 *buf = '\0';
