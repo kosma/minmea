@@ -49,6 +49,7 @@ static const char *valid_sentences_checksum[] = {
     "$GPGST,024603.00,3.2,6.6,4.7,47.3,5.8,5.6,22.0*58",
     "$GPZDA,160012.71,11,03,2004,-1,00*7D",
     "$GNGBS,170556.00,3.0,2.9,8.3,,,,*5C",
+    "$HEHDT,234.56,T*19",
     NULL,
 };
 
@@ -64,6 +65,7 @@ static const char *invalid_sentences[] = {
     "$GPTXT,hello\n ",
     "$GPTXT,hello\r*24",
     "$GPTXT,hello\r\n$",
+    "$HEHDT,234.56,T*1E",
     NULL,
 };
 
@@ -1029,6 +1031,25 @@ START_TEST(test_minmea_parse_zda1)
 }
 END_TEST
 
+START_TEST(test_minmea_parse_hdt)
+{
+    /* Standard gyrocompass heading sentence for validation */
+    const char *hdt_sentence = "$HEHDT,234.56,T*19\r\n";
+    struct minmea_sentence_hdt frame;
+
+    /* Verify sentence ID mapping */
+    ck_assert_int_eq(minmea_sentence_id(hdt_sentence, false), MINMEA_SENTENCE_HDT);
+
+    /* Verify parser execution state */
+    ck_assert(minmea_parse_hdt(&frame, hdt_sentence) == true);
+
+    /* Verify mapped data indicators and structures */
+    ck_assert_int_eq(frame.true_heading, 'T');
+    ck_assert_int_eq(frame.heading.value, 23456);
+    ck_assert_int_eq(frame.heading.scale, 100);
+}
+END_TEST
+
 START_TEST(test_minmea_usage1)
 {
     const char *sentences[] = {
@@ -1252,6 +1273,7 @@ static Suite *minmea_suite(void)
     tcase_add_test(tc_parse, test_minmea_parse_vtg2);
     tcase_add_test(tc_parse, test_minmea_parse_vtg3);
     tcase_add_test(tc_parse, test_minmea_parse_zda1);
+    tcase_add_test(tc_parse, test_minmea_parse_hdt);
     suite_add_tcase(s, tc_parse);
 
     TCase *tc_usage = tcase_create("minmea_usage");

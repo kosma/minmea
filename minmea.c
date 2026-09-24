@@ -365,6 +365,7 @@ struct sentence_id_map_entry sentence_id_map[] = {
     { "RMC", MINMEA_SENTENCE_RMC },
     { "VTG", MINMEA_SENTENCE_VTG },
     { "ZDA", MINMEA_SENTENCE_ZDA },
+    { "HDT", MINMEA_SENTENCE_HDT }, 
 };
 
 const char* minmea_sentence(enum minmea_sentence_id id) {
@@ -638,6 +639,21 @@ bool minmea_parse_zda(struct minmea_sentence_zda *frame, const char *sentence)
       return false;
 
   return true;
+}
+
+bool minmea_parse_hdt(struct minmea_sentence_hdt *frame, const char *sentence)
+{    /* Scan using 't' for the union type payload pointer, 'f' for float, 'c' for char */
+    if (!minmea_scan(sentence, "tfc",
+        &frame->type,
+        &frame->heading,
+        &frame->true_heading)
+    ) return false;
+    
+    /* Verify if the extracted token matches the specific HDT layout code */
+    if (memcmp(frame->type.sentence_id, "HDT", sizeof(frame->type.sentence_id)))
+            return false;    
+    return true;
+
 }
 
 int minmea_getdatetime(struct tm *tm, const struct minmea_date *date, const struct minmea_time *time_)

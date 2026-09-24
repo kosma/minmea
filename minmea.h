@@ -38,6 +38,7 @@ enum minmea_sentence_id {
     MINMEA_SENTENCE_RMC,
     MINMEA_SENTENCE_VTG,
     MINMEA_SENTENCE_ZDA,
+    MINMEA_SENTENCE_HDT,
 };
 
 struct minmea_float {
@@ -196,6 +197,12 @@ struct minmea_sentence_zda {
     int minute_offset;
 };
 
+struct minmea_sentence_hdt {
+    union minmea_type type;
+    struct minmea_float heading;
+    char true_heading;
+};
+
 /**
  * Calculate raw sentence checksum. Does not check sentence integrity.
  */
@@ -249,6 +256,7 @@ bool minmea_parse_gst(struct minmea_sentence_gst *frame, const char *sentence);
 bool minmea_parse_gsv(struct minmea_sentence_gsv *frame, const char *sentence);
 bool minmea_parse_vtg(struct minmea_sentence_vtg *frame, const char *sentence);
 bool minmea_parse_zda(struct minmea_sentence_zda *frame, const char *sentence);
+bool minmea_parse_hdt(struct minmea_sentence_hdt *frame, const char *sentence);
 
 /**
  * Convert GPS UTC date/time representation to a UNIX calendar time.
@@ -311,10 +319,6 @@ static inline float minmea_tocoord(const struct minmea_float *f)
 static inline bool minmea_isfield(char c) {
     return isprint((unsigned char) c) && c != ',' && c != '*';
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* MINMEA_H */
 
