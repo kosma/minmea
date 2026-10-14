@@ -8,7 +8,7 @@
 
 #if defined(_MSC_VER)
 
-#if !defined(HAVE_STRUCT_TIMESPEC)
+#if _MSC_VER < 1900
 struct timespec {
     time_t tv_sec;
     long tv_nsec;
