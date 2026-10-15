@@ -270,9 +270,18 @@ static inline int_least32_t minmea_rescale(const struct minmea_float *f, int_lea
         return 0;
     if (f->scale == new_scale)
         return f->value;
-    if (f->scale > new_scale)
-        return (f->value + ((f->value > 0) - (f->value < 0)) * f->scale/new_scale/2) / (f->scale/new_scale);
-    else
+    if (f->scale > new_scale) {
+        int_least32_t divisor = f->scale / new_scale;
+        int_least32_t quotient = f->value / divisor;
+        int_least32_t remainder = f->value % divisor;
+        int_least32_t threshold = divisor - divisor / 2;
+        /* Round using the remainder so adding half the divisor cannot overflow. */
+        if (remainder >= threshold)
+            quotient++;
+        else if (remainder <= -threshold)
+            quotient--;
+        return quotient;
+    } else
         return f->value * (new_scale/f->scale);
 }
 

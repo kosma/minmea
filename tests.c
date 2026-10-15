@@ -1177,6 +1177,12 @@ START_TEST(test_minmea_rescale)
     ck_assert_int_eq(minmea_rescale(&(struct minmea_float) { -1235, 10 }, 1), -124);
     ck_assert_int_eq(minmea_rescale(&(struct minmea_float) { -1236, 10 }, 1), -124);
 
+    /* Rounding must not overflow before a downscale near the signed limits. */
+    ck_assert_int_eq(minmea_rescale(&(struct minmea_float) { INT_LEAST32_MAX, 10 }, 1),
+                     INT_LEAST32_MAX / 10 + 1);
+    ck_assert_int_eq(minmea_rescale(&(struct minmea_float) { INT_LEAST32_MIN, 10 }, 1),
+                     INT_LEAST32_MIN / 10 - 1);
+
     /* shouldn't overflow on large numbers. */
     ck_assert_int_eq(minmea_rescale(&(struct minmea_float) { 510693608, 100000 }, 10000), 51069361);
 }
