@@ -252,6 +252,7 @@ bool minmea_parse_zda(struct minmea_sentence_zda *frame, const char *sentence);
 
 /**
  * Convert GPS UTC date/time representation to a UNIX calendar time.
+ * Returns -1 if the date or time is unknown, or if the month or day is out of range.
  */
 int minmea_getdatetime(struct tm *tm, const struct minmea_date *date, const struct minmea_time *time_);
 
