@@ -9,6 +9,7 @@
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wtype-limits"
 
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <check.h>
@@ -1111,6 +1112,28 @@ START_TEST(test_minmea_gettime)
     ck_assert(minmea_getdatetime(&tm, &d, &t) != 0);
     ck_assert(minmea_gettime(&ts, &d, &t) != 0);
     t.hours = 13;
+
+    /* out-of-range month and day */
+    static const int bad_months[] = { 0, 13, 99, -2, INT_MIN, INT_MAX };
+    for (size_t i = 0; i < sizeof(bad_months) / sizeof(bad_months[0]); i++) {
+        d.month = bad_months[i];
+        ck_assert(minmea_getdatetime(&tm, &d, &t) != 0);
+        ck_assert(minmea_gettime(&ts, &d, &t) != 0);
+    }
+    d.month = 2;
+    static const int bad_days[] = { 0, 32, 99, -2, INT_MIN, INT_MAX };
+    for (size_t i = 0; i < sizeof(bad_days) / sizeof(bad_days[0]); i++) {
+        d.day = bad_days[i];
+        ck_assert(minmea_getdatetime(&tm, &d, &t) != 0);
+        ck_assert(minmea_gettime(&ts, &d, &t) != 0);
+    }
+    d.day = 14;
+
+    /* a ZDA sentence is accepted with any month; the conversion must refuse it */
+    struct minmea_sentence_zda zda;
+    ck_assert(minmea_parse_zda(&zda, "$GPZDA,000000.00,01,-2147483648,2020,00,00") == true);
+    ck_assert(minmea_getdatetime(&tm, &zda.date, &zda.time) != 0);
+    ck_assert(minmea_gettime(&ts, &zda.date, &zda.time) != 0);
 
     /* two digit year conversions */
     d.year = 80;

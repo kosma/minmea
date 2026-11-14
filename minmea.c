@@ -644,6 +644,9 @@ int minmea_getdatetime(struct tm *tm, const struct minmea_date *date, const stru
 {
     if (date->year == -1 || time_->hours == -1)
         return -1;
+    /* A parsed sentence can carry any month or day (e.g. ZDA): reject what is not a calendar date. */
+    if (date->month < 1 || date->month > 12 || date->day < 1 || date->day > 31)
+        return -1;
 
     memset(tm, 0, sizeof(*tm));
     if (date->year < 80) {
